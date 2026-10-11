@@ -1,33 +1,33 @@
 package com.karrecy.common.jackson;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.ContextualSerializer;
-
 import com.karrecy.common.annotation.Sensitive;
 import com.karrecy.common.core.service.SensitiveService;
 import com.karrecy.common.enums.SensitiveStrategy;
 import com.karrecy.common.utils.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.BeanProperty;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
  * 数据脱敏json序列化工具
+ * <p>
+ * Spring Boot 4 / Jackson 3：JsonSerializer 更名为 ValueSerializer，
+ * ContextualSerializer 接口取消，上下文处理合并为 ValueSerializer#createContextual。
+ * </p>
  */
 @Slf4j
-public class SensitiveJsonSerializer extends JsonSerializer<String> implements ContextualSerializer {
+public class SensitiveJsonSerializer extends ValueSerializer<String> {
 
     private SensitiveStrategy strategy;
 
     @Override
-    public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    public void serialize(String value, JsonGenerator gen, SerializationContext ctxt) {
         try {
             SensitiveService sensitiveService = SpringUtils.getBean(SensitiveService.class);
             if (ObjectUtil.isNotNull(sensitiveService) && sensitiveService.isSensitive()) {
@@ -42,12 +42,12 @@ public class SensitiveJsonSerializer extends JsonSerializer<String> implements C
     }
 
     @Override
-    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
+    public ValueSerializer<?> createContextual(SerializationContext ctxt, BeanProperty property) {
         Sensitive annotation = property.getAnnotation(Sensitive.class);
         if (Objects.nonNull(annotation) && Objects.equals(String.class, property.getType().getRawClass())) {
             this.strategy = annotation.strategy();
             return this;
         }
-        return prov.findValueSerializer(property.getType(), property);
+        return ctxt.findValueSerializer(property.getType());
     }
 }

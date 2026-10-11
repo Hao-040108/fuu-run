@@ -12,12 +12,12 @@
 
     <properties>
         <revision>1.0.0</revision>
-        <spring-boot.version>3.5.16</spring-boot.version>
+        <spring-boot.version>4.1.1</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
-        <springdoc.version>2.9.1</springdoc.version>
+        <springdoc.version>3.1.1</springdoc.version>
         <poi.version>5.2.3</poi.version>
         <easyexcel.version>3.3.2</easyexcel.version>
         <velocity.version>2.3</velocity.version>
@@ -26,8 +26,8 @@
         <p6spy.version>3.9.1</p6spy.version>
         <hutool.version>5.8.48</hutool.version>
         <okhttp.version>4.10.0</okhttp.version>
-        <spring-boot-admin.version>3.5.11</spring-boot-admin.version>
-        <redisson.version>3.52.0</redisson.version>
+        <spring-boot-admin.version>4.1.4</spring-boot-admin.version>
+        <redisson.version>4.8.0</redisson.version>
         <alibaba-ttl.version>2.14.2</alibaba-ttl.version>
         <xxl-job.version>2.4.0</xxl-job.version>
         <lombok.version>1.18.48</lombok.version>
@@ -133,7 +133,7 @@
             <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->
             <dependency>
                 <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-spring-boot3-starter</artifactId>
+                <artifactId>sa-token-spring-boot4-starter</artifactId>
                 <version>${satoken.version}</version>
             </dependency>
             <!-- Sa-Token 整合 jwt -->
@@ -151,7 +151,7 @@
 
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
 
@@ -196,6 +196,13 @@
             <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <!-- Redisson Spring Cache（4.x 起从核心包拆分，RedisSpringCacheManager 等） -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-cache</artifactId>
                 <version>${redisson.version}</version>
             </dependency>
 

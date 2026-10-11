@@ -5,11 +5,11 @@ import com.karrecy.common.utils.redis.QueueUtils;
 import com.karrecy.framework.websocket.server.NioWebSocketServer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.concurrent.TimeUnit;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@MockBean(NioWebSocketServer.class)
+@MockitoBean(types = NioWebSocketServer.class)
 class FuuAdminApplicationTests {
 
 

@@ -1,14 +1,13 @@
 package com.karrecy.framework.config;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karrecy.common.core.domain.model.ChatBody;
 import com.karrecy.framework.config.properties.RedissonProperties;
 import com.karrecy.framework.handler.KeyPrefixHandler;
 import com.karrecy.framework.manager.PlusSpringCacheManager;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBoundedBlockingQueue;
-import org.redisson.codec.JsonJacksonCodec;
+import org.redisson.codec.JsonJackson3Codec;
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,6 +15,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tools.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.PostConstruct;
 
@@ -39,7 +39,7 @@ public class RedisConfig {
         return config -> {
             config.setThreads(redissonProperties.getThreads())
                 .setNettyThreads(redissonProperties.getNettyThreads())
-                .setCodec(new JsonJacksonCodec(objectMapper));
+                .setCodec(new JsonJackson3Codec(objectMapper));
             RedissonProperties.SingleServerConfig singleServerConfig = redissonProperties.getSingleServerConfig();
             if (ObjectUtil.isNotNull(singleServerConfig)) {
                 // 使用单机模式

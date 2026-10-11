@@ -1,9 +1,10 @@
 package com.karrecy.common.handler;
 
 import com.baomidou.mybatisplus.extension.handlers.AbstractJsonTypeHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -11,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class JsonTypeHandler<T> extends BaseTypeHandler<T> {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().build();
     private final Class<T> type;
 
     public JsonTypeHandler(Class<T> type) {

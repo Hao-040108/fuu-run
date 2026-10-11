@@ -2,8 +2,6 @@ package com.karrecy.framework.handler;
 
 
 import cn.hutool.core.util.ObjectUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karrecy.common.constant.QueueNames;
 import com.karrecy.common.core.domain.model.ChatBody;
 import com.karrecy.common.enums.Status;
@@ -18,6 +16,7 @@ import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.AttributeKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import tools.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -68,7 +67,7 @@ public class NioWebSocketHandler extends SimpleChannelInboundHandler<WebSocketFr
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws JsonProcessingException {
+    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) {
         if (frame instanceof PingWebSocketFrame) {
             ctx.channel().writeAndFlush(new PongWebSocketFrame(frame.content().retain()));
         } else if (frame instanceof TextWebSocketFrame) {

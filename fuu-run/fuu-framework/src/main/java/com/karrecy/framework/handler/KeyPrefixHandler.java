@@ -1,7 +1,7 @@
 package com.karrecy.framework.handler;
 
 import com.karrecy.common.utils.StringUtils;
-import org.redisson.api.NameMapper;
+import org.redisson.config.NameMapper;
 
 /**
  * redis缓存key前缀处理

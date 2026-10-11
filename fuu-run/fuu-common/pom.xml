@@ -36,7 +36,7 @@
         <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->
         <dependency>
             <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-spring-boot3-starter</artifactId>
+            <artifactId>sa-token-spring-boot4-starter</artifactId>
         </dependency>
         <!-- Sa-Token 整合 jwt -->
         <dependency>
@@ -81,7 +81,7 @@
 
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
         </dependency>
 
         <!-- MyBatis-Plus 分页插件（3.5.9+ 独立构件） -->
@@ -146,6 +146,11 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-cache</artifactId>
         </dependency>
 
         <!-- 加密包引入 -->
