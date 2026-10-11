@@ -33,6 +33,7 @@
 	    <nut-grid-item @click="toOrderQusong"  text="帮送"><nut-icon font-class-name="gridIcon" name="/static/index/song.jpg" /></nut-grid-item>
 	    <nut-grid-item @click="toOrderBangmai" text="帮买"><nut-icon font-class-name="gridIcon" name="/static/index/mai.jpg" /></nut-grid-item>
 	    <nut-grid-item @click="toOrderWanneg" text="万能"><nut-icon font-class-name="gridIcon" name="/static/index/wan.jpg" /></nut-grid-item>
+	    <nut-grid-item @click="toMall" text="代购商城"><nut-icon font-class-name="gridIcon" name="/static/index/mai.jpg" /></nut-grid-item>
 	  </nut-grid>
 	  
 	  <!-- <span @click="toLogin">test</span> -->
@@ -96,6 +97,11 @@
 			
 		},
 		methods: {
+			toMall() {
+				uni.navigateTo({
+					url: '/pages/API/mall/index'
+				})
+			},
 			toLogin() {
 				uni.navigateTo({
 					url:'/pages/API/login/login'

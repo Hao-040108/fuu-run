@@ -202,6 +202,31 @@
 				"navigationBarTitleText": "用户协议"
 			}
 		}
+		,
+		{
+			"path": "pages/API/mall/index",
+			"style": {
+				"navigationBarTitleText": "代购商城"
+			}
+		},
+		{
+			"path": "pages/API/mall/detail",
+			"style": {
+				"navigationBarTitleText": "商品详情"
+			}
+		},
+		{
+			"path": "pages/API/mall/cart",
+			"style": {
+				"navigationBarTitleText": "购物车"
+			}
+		},
+		{
+			"path": "pages/API/mall/settle",
+			"style": {
+				"navigationBarTitleText": "确认订单"
+			}
+		}
 	],
 	"tabBar": {
 	    "list": [
