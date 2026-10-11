@@ -21,14 +21,14 @@ fuu:
   # 用户地址上限
   max-address: 20
 email:
-  host: #邮箱服务器
-  port: #端口
-  user: #你的邮箱地址
-  pass: #密钥
+  host: smtp.example.com
+  port: 465
+  user: dev@example.com
+  pass: devpass
 
 # 高德配置
 amap:
-  key: #你的key
+  key: dev-amap-key
 
 chat:
   websocket:
@@ -96,9 +96,9 @@ spring:
     driverClassName: com.mysql.cj.jdbc.Driver
     # jdbc 所有参数配置参考 https://lionli.blog.csdn.net/article/details/122018562
     # rewriteBatchedStatements=true 批处理优化 大幅提升批量插入更新删除性能(对数据库有性能损耗 使用批量操作应考虑性能问题)
-    url: jdbc:mysql://localhost:3306/fuudb?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true
+    url: jdbc:mysql://localhost:3307/fuudb?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true
     username: root
-    password: 你的密码
+    password:
 
 # MyBatisPlus配置
 # https://baomidou.com/config/
@@ -235,26 +235,26 @@ sa-token:
   # token前缀
   token-prefix: "Bearer"
   # jwt秘钥
-  jwt-secret-key: #你的jwt秘钥
+  jwt-secret-key: fuu-dev-jwt-secret-0123456789abcdef
   auto-renew: true
 
 wx:
   miniapp:
     configs:
-      - appid: #你的appid
-        secret: #你的secret
-        token: #你的token
-        aesKey: #你的aesKey
-        msgDataFormat: #你的msgDataFormat
+      - appid: wxdummy0000000000
+        secret: dummydummydummydummydummydummydummy
+        token: dev-token
+        aesKey: dev-aes-key
+        msgDataFormat: JSON
 
   pay: #微信服务商支付
-      appId: #你的appid
-      mchId: #你的mchId
+      appId: wx1234567890abcdef
+      mchId: 1900000000
       returnUrl: http://你的域名/notify/payNotify
       refundUrl: http://你的域名/notify/refundNotify
 #      returnUrl: https://你的域名/dev/notify/payNotify
 #      refundUrl: https://你的域名/dev/notify/refundNotify
-      apiV3Key: #你的apiV3Key
+      apiV3Key: 12345678901234567890123456789012
       privateKeyPath: classpath:cert/apiclient_key.pem
       privateCertPath: classpath:cert/apiclient_cert.pem
 
