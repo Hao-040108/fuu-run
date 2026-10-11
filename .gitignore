@@ -52,6 +52,7 @@ package-lock.json
 
 # Maven 相关
 .mvn/
+**/.flattened-pom.xml
 **/pom.xml.tag
 **/pom.xml.releaseBackup
 **/pom.xml.next
