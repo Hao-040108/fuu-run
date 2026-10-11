@@ -229,6 +229,8 @@ sa-token:
   is-read-cookie: false
   # token前缀
   token-prefix: "Bearer"
+  # 允许 loginId 包含冒号（Sa-Token 1.46+ 默认禁止；本项目 loginId 格式为 userType:uid）
+  allow-login-id-colon: true
   # jwt秘钥
   jwt-secret-key: fuu-dev-jwt-secret-0123456789abcdef
   auto-renew: true

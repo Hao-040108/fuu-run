@@ -348,6 +348,8 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <!-- Spring Boot 3.2+/Spring 6.1+ 依赖 -parameters 保留方法参数名（@PathVariable/@RequestParam 省略 name 时必须） -->
+                    <parameters>true</parameters>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>com.github.therapi</groupId>
