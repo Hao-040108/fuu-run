@@ -15,7 +15,7 @@ import com.karrecy.system.domain.bo.UserWxQuery;
 import com.karrecy.system.mapper.UserMapper;
 import com.karrecy.system.mapper.UserWxMapper;
 import com.karrecy.system.service.IUserWxService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

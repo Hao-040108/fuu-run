@@ -1,7 +1,7 @@
 package com.karrecy.system.service;
 
 import com.karrecy.common.core.domain.entity.RolePerm;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 
 /**
  * <p>

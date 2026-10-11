@@ -3,7 +3,7 @@ package com.karrecy.system.service;
 import com.karrecy.common.core.domain.R;
 import com.karrecy.common.core.domain.entity.StatisticsDaily;
 import com.karrecy.common.core.domain.entity.User;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 import com.karrecy.common.enums.DeviceType;
 
 import java.time.LocalDate;

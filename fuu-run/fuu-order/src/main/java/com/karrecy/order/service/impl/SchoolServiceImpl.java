@@ -9,7 +9,7 @@ import com.karrecy.common.utils.StringUtils;
 import com.karrecy.order.domain.po.School;
 import com.karrecy.order.mapper.SchoolMapper;
 import com.karrecy.order.service.ISchoolService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

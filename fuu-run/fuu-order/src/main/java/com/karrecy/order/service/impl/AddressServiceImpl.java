@@ -9,7 +9,7 @@ import com.karrecy.common.helper.LoginHelper;
 import com.karrecy.order.domain.po.Address;
 import com.karrecy.order.mapper.AddressMapper;
 import com.karrecy.order.service.IAddressService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

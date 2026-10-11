@@ -3,7 +3,7 @@ package com.karrecy.order.service;
 import com.karrecy.common.core.domain.PageQuery;
 import com.karrecy.common.core.page.TableDataInfo;
 import com.karrecy.order.domain.po.School;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 
 /**
  * <p>

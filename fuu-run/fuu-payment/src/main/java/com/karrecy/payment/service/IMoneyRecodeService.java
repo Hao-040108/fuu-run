@@ -1,7 +1,7 @@
 package com.karrecy.payment.service;
 
 import com.karrecy.payment.domain.po.MoneyRecode;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 
 /**
  * <p>

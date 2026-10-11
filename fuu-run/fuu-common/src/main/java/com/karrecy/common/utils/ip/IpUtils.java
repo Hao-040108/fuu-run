@@ -4,7 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.karrecy.common.utils.ServletUtils;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import com.karrecy.common.utils.StringUtils;
 
 /**

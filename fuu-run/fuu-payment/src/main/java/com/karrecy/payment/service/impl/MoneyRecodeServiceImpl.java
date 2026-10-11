@@ -15,7 +15,7 @@ import com.karrecy.payment.domain.po.MoneyRecode;
 import com.karrecy.payment.mapper.CapitalFlowMapper;
 import com.karrecy.payment.mapper.MoneyRecodeMapper;
 import com.karrecy.payment.service.IMoneyRecodeService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.karrecy.system.domain.po.Wallet;
 import com.karrecy.system.mapper.UserMapper;
 import com.karrecy.system.mapper.WalletMapper;

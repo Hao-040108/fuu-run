@@ -22,7 +22,7 @@ import com.karrecy.order.mapper.OrderAttachmentMapper;
 import com.karrecy.order.mapper.OrderMainMapper;
 import com.karrecy.order.mapper.OrderPaymentMapper;
 import com.karrecy.order.service.IOrderAppealService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.karrecy.payment.service.IPayService;
 import com.karrecy.system.domain.po.Oss;
 import com.karrecy.system.mapper.OssMapper;

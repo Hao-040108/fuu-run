@@ -4,7 +4,7 @@ import com.karrecy.common.constant.UserConstants;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * email登录对象

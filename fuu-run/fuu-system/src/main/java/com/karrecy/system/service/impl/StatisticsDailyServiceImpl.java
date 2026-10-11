@@ -3,7 +3,7 @@ package com.karrecy.system.service.impl;
 import com.karrecy.common.core.domain.entity.StatisticsDaily;
 import com.karrecy.system.mapper.StatisticsDailyMapper;
 import com.karrecy.system.service.IStatisticsDailyService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**

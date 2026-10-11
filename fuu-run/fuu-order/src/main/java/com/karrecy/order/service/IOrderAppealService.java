@@ -2,7 +2,7 @@ package com.karrecy.order.service;
 
 import com.karrecy.order.domain.dto.OrderAppealDTO;
 import com.karrecy.order.domain.po.OrderAppeal;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 import com.karrecy.order.domain.vo.OrderAppealVO;
 
 import java.util.List;

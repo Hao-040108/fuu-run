@@ -14,7 +14,7 @@ import com.karrecy.common.helper.LoginHelper;
 import com.karrecy.payment.domain.po.CapitalFlow;
 import com.karrecy.payment.mapper.CapitalFlowMapper;
 import com.karrecy.payment.service.ICapitalFlowService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

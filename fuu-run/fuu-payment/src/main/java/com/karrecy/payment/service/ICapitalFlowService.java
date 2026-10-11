@@ -3,7 +3,7 @@ package com.karrecy.payment.service;
 import com.karrecy.common.core.domain.PageQuery;
 import com.karrecy.common.core.page.TableDataInfo;
 import com.karrecy.payment.domain.po.CapitalFlow;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 
 /**
  * <p>

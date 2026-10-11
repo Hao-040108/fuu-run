@@ -1,7 +1,7 @@
 package com.karrecy.order.service;
 
 import com.karrecy.order.domain.po.OrderPayment;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 
 /**
  * <p>

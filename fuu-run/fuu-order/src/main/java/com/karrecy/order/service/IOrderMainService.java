@@ -9,7 +9,7 @@ import com.karrecy.order.domain.dto.OrderQuery;
 import com.karrecy.order.domain.dto.OrderSubmitDTO;
 import com.karrecy.order.domain.po.OrderChat;
 import com.karrecy.order.domain.po.OrderMain;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 import com.karrecy.order.domain.vo.OrderDetailVO;
 import com.karrecy.payment.domain.vo.PayedVO;
 

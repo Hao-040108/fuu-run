@@ -3,7 +3,7 @@ package com.karrecy.order.service.impl;
 import com.karrecy.order.domain.po.OrderAttachment;
 import com.karrecy.order.mapper.OrderAttachmentMapper;
 import com.karrecy.order.service.IOrderAttachmentService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**

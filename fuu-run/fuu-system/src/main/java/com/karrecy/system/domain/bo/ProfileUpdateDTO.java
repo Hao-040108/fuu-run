@@ -3,7 +3,7 @@ package com.karrecy.system.domain.bo;
 import com.karrecy.common.core.validate.EditGroup;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * 更新个人信息请求体

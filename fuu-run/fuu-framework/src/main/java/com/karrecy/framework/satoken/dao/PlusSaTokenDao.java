@@ -1,6 +1,7 @@
 package com.karrecy.framework.satoken.dao;
 
 import cn.dev33.satoken.dao.SaTokenDao;
+import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.util.SaFoxUtil;
 import com.karrecy.common.utils.redis.RedisUtils;
 
@@ -97,6 +98,15 @@ public class PlusSaTokenDao implements SaTokenDao {
     }
 
     /**
+     * 获取指定类型Object（Sa-Token 1.4x 新增；语义参考官方 SaTokenDaoBySessionFollowObject）
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getObject(String key, Class<T> classType) {
+        return (T) RedisUtils.getCacheObject(key);
+    }
+
+    /**
      * 写入Object，并设定存活时间 (单位: 秒)
      */
     @Override
@@ -159,6 +169,54 @@ public class PlusSaTokenDao implements SaTokenDao {
             return;
         }
         RedisUtils.expire(key, Duration.ofSeconds(timeout));
+    }
+
+    /**
+     * 获取 SaSession，如无返空（Sa-Token 1.41+ 新增接口，复用 Object 读写）
+     */
+    @Override
+    public SaSession getSession(String sessionId) {
+        return getObject(sessionId, SaSession.class);
+    }
+
+    /**
+     * 写入 SaSession，并设定存活时间（单位: 秒）
+     */
+    @Override
+    public void setSession(SaSession session, long timeout) {
+        setObject(session.getId(), session, timeout);
+    }
+
+    /**
+     * 更新 SaSession
+     */
+    @Override
+    public void updateSession(SaSession session) {
+        updateObject(session.getId(), session);
+    }
+
+    /**
+     * 删除 SaSession
+     */
+    @Override
+    public void deleteSession(String sessionId) {
+        deleteObject(sessionId);
+    }
+
+    /**
+     * 获取 SaSession 剩余存活时间（单位: 秒）
+     */
+    @Override
+    public long getSessionTimeout(String sessionId) {
+        return getObjectTimeout(sessionId);
+    }
+
+    /**
+     * 修改 SaSession 剩余存活时间（单位: 秒）
+     */
+    @Override
+    public void updateSessionTimeout(String sessionId, long timeout) {
+        updateObjectTimeout(sessionId, timeout);
     }
 
 

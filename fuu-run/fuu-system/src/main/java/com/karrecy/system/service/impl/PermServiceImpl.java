@@ -6,7 +6,7 @@ import com.karrecy.common.core.domain.entity.RolePerm;
 import com.karrecy.system.mapper.PermMapper;
 import com.karrecy.system.mapper.RolePermMapper;
 import com.karrecy.system.service.IPermService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

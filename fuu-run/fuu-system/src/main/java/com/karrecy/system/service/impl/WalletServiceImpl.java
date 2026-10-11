@@ -3,7 +3,7 @@ package com.karrecy.system.service.impl;
 import com.karrecy.system.domain.po.Wallet;
 import com.karrecy.system.mapper.WalletMapper;
 import com.karrecy.system.service.IWalletService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**

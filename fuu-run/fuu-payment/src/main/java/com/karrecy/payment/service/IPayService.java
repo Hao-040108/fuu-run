@@ -2,7 +2,7 @@ package com.karrecy.payment.service;
 
 import com.karrecy.payment.domain.vo.PayedVO;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 
 

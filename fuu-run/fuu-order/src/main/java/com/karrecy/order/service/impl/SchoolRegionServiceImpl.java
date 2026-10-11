@@ -6,7 +6,7 @@ import com.karrecy.order.domain.po.SchoolRegion;
 import com.karrecy.order.domain.vo.RegionVO;
 import com.karrecy.order.mapper.SchoolRegionMapper;
 import com.karrecy.order.service.ISchoolRegionService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

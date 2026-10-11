@@ -2,8 +2,8 @@ package com.karrecy.common.sensitive;
 
 import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * 自定义敏感词校验注解实现

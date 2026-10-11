@@ -1,7 +1,6 @@
 package com.karrecy.common.utils;
 
 import cn.hutool.core.convert.Convert;
-import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.http.HtmlUtil;
 import cn.hutool.http.HttpStatus;
 import com.karrecy.common.constant.Constants;
@@ -12,10 +11,10 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -30,7 +29,7 @@ import java.util.Map;
  * 客户端工具类
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ServletUtils extends ServletUtil {
+public class ServletUtils {
 
     /**
      * 获取String参数
@@ -198,6 +197,22 @@ public class ServletUtils extends ServletUtil {
 
         String ajax = request.getParameter("__ajax");
         return StringUtils.equalsAnyIgnoreCase(ajax, "json", "xml");
+    }
+
+    /**
+     * 获取客户端IP（兼容代理场景；原由 Hutool 5.x ServletUtil 提供，该方法基于 javax，故在此自实现 jakarta 版本）
+     */
+    public static String getClientIP(HttpServletRequest request) {
+        String[] headers = {"X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP",
+                "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"};
+        for (String header : headers) {
+            String ip = request.getHeader(header);
+            if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+                int idx = ip.indexOf(',');
+                return idx > 0 ? ip.substring(0, idx).trim() : ip.trim();
+            }
+        }
+        return request.getRemoteAddr();
     }
 
     public static String getClientIP() {

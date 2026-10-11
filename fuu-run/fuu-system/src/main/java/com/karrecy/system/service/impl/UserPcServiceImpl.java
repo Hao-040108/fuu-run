@@ -18,7 +18,7 @@ import com.karrecy.system.mapper.UserMapper;
 import com.karrecy.system.mapper.UserPcMapper;
 import com.karrecy.system.mapper.UserWxMapper;
 import com.karrecy.system.service.IUserPcService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

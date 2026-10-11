@@ -3,7 +3,7 @@ package com.karrecy.system.service;
 import com.karrecy.common.core.domain.PageQuery;
 import com.karrecy.common.core.domain.entity.User;
 import com.karrecy.common.core.domain.entity.UserPc;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 import com.karrecy.common.core.domain.entity.UserWx;
 import com.karrecy.common.core.page.TableDataInfo;
 import com.karrecy.system.domain.bo.UserPcQuery;
