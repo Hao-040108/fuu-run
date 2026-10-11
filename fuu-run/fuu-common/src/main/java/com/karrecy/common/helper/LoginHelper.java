@@ -11,6 +11,7 @@ import com.karrecy.common.constant.UserConstants;
 import com.karrecy.common.core.domain.model.LoginUser;
 import com.karrecy.common.enums.DeviceType;
 import com.karrecy.common.enums.UserType;
+import com.karrecy.common.utils.JsonUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,8 @@ public class LoginHelper {
         SaSession tokenSession = StpUtil.getTokenSession();
         tokenSession.clear();
         tokenSession.set(LOGIN_USER_KEY, loginUser);
+        // 显式持久化会话（SaTokenDao.getSession 从 Redis 还原时依赖此数据）
+        tokenSession.update();
     }
 
     /**
@@ -62,7 +65,10 @@ public class LoginHelper {
         if (ObjectUtil.isNull(session)) {
             return null;
         }
-        loginUser = (LoginUser) session.get(LOGIN_USER_KEY);
+        loginUser = convertLoginUser(session.get(LOGIN_USER_KEY));
+        if (loginUser == null) {
+            return null;
+        }
         SaHolder.getStorage().set(LOGIN_USER_KEY, loginUser);
         return loginUser;
     }
@@ -75,7 +81,20 @@ public class LoginHelper {
         if (ObjectUtil.isNull(session)) {
             return null;
         }
-        return (LoginUser) session.get(LOGIN_USER_KEY);
+        return convertLoginUser(session.get(LOGIN_USER_KEY));
+    }
+
+    /**
+     * 会话值还原为 LoginUser（Redis 反序列化后为 Map）
+     */
+    private static LoginUser convertLoginUser(Object cache) {
+        if (cache == null) {
+            return null;
+        }
+        if (cache instanceof LoginUser) {
+            return (LoginUser) cache;
+        }
+        return JsonUtils.getObjectMapper().convertValue(cache, LoginUser.class);
     }
 
 

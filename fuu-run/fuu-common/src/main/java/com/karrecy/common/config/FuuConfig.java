@@ -63,4 +63,10 @@ public class FuuConfig {
      * 用户地址上限
      */
     private Integer maxAddress;
+
+    /**
+     * 模拟支付开关（仅开发环境使用）：
+     * 开启后下单不请求微信预支付，可通过 POST /dev/mockPay/{orderId} 模拟支付成功，完成订单闭环
+     */
+    private Boolean mockPayEnabled;
 }

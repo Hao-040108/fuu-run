@@ -28,6 +28,7 @@ import com.karrecy.order.domain.dto.OrderCancelDTO;
 import com.karrecy.order.domain.dto.OrderCompleteDTO;
 import com.karrecy.order.domain.dto.OrderQuery;
 import com.karrecy.order.domain.dto.OrderSubmitDTO;
+import com.karrecy.order.domain.dto.MallOrderCreateDTO;
 import com.karrecy.order.domain.po.*;
 import com.karrecy.order.domain.vo.AddressVO;
 import com.karrecy.order.domain.vo.OrderDetailVO;
@@ -285,8 +286,8 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
             }
         }
 
-        //请求微信支付
-        PayedVO payedVO = payService.pay("跑腿订单",orderId,totalAmount,userWx.getOpenid());
+        //请求微信支付（开发模式 fuu.mock-pay-enabled=true 时跳过预支付，由 /dev/mockPay/{orderId} 完成支付闭环）
+        PayedVO payedVO = payOrder(orderId, "跑腿订单", totalAmount, userWx.getOpenid());
 
 
         //加入延时队列
@@ -296,6 +297,125 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
                 fuuConfig.getPayCancelTtl(),
                 TimeUnit.MINUTES);
 
+        return payedVO;
+    }
+
+    /**
+     * 发起支付（开发模式感知）
+     * <p>fuu.mock-pay-enabled=true 时不调用微信预支付接口，返回 payPending=true 的占位对象，
+     * 之后可通过 POST /dev/mockPay/{orderId} 模拟支付成功，触发与真实回调一致的队列流程。</p>
+     */
+    private PayedVO payOrder(Long orderId, String desc, BigDecimal totalAmount, String openid) {
+        if (ObjectUtil.equals(Boolean.TRUE, fuuConfig.getMockPayEnabled())) {
+            log.warn("模拟支付已开启（fuu.mock-pay-enabled=true）：订单 {} 跳过微信预支付，可用 /dev/mockPay/{} 完成支付闭环", orderId, orderId);
+            PayedVO vo = new PayedVO();
+            vo.setOrderId(orderId);
+            vo.setPayPending(true);
+            return vo;
+        }
+        return payService.pay(desc, orderId, totalAmount, openid);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long createMallOrder(MallOrderCreateDTO dto) {
+        // —— 校验学校与用户（与需求大厅下单保持一致的规则）——
+        School schoolDB = schoolMapper.selectById(dto.getSchoolId());
+        if (schoolDB == null) {
+            throw new OrderException("没有找到该学校");
+        }
+        if (ObjectUtil.equals(schoolDB.getStatus(), Status.DISABLE.getCode())) {
+            throw new OrderException("当前学校已关闭，不可下单");
+        }
+        Long uid = LoginHelper.getUserId();
+        UserWx userWx = userWxMapper.selectOne(new LambdaQueryWrapper<UserWx>().eq(UserWx::getUid, uid));
+        if (ObjectUtil.isEmpty(userWx)) {
+            throw new OrderException("该微信用户不存在");
+        }
+        if (ObjectUtil.isNull(userWx.getPhone())) {
+            throw new OrderException("未绑定手机号，不可下单");
+        }
+        if (ObjectUtil.equals(userWx.getCanOrder(), Status.DISABLE.getCode())) {
+            throw new OrderException("账号被拉黑，不可下单");
+        }
+        if (ObjectUtil.isEmpty(dto.getEndAddress())) {
+            throw new OrderException("收货地址不可为空");
+        }
+
+        BigDecimal goodsAmount = ObjectUtil.defaultIfNull(dto.getGoodsAmount(), BigDecimal.ZERO);
+        BigDecimal serviceFee = ObjectUtil.defaultIfNull(dto.getServiceFee(), BigDecimal.ZERO);
+        BigDecimal additionalAmount = ObjectUtil.defaultIfNull(dto.getAdditionalAmount(), BigDecimal.ZERO);
+        BigDecimal totalAmount = BigDecimalUtils.add(
+                BigDecimalUtils.add(schoolDB.getFloorPrice(), goodsAmount),
+                BigDecimalUtils.add(serviceFee, additionalAmount));
+
+        // —— 构建订单主表（来源=代购商城，复用"代买"服务类型）——
+        OrderMain orderMain = new OrderMain();
+        orderMain.setSchoolId(schoolDB.getId());
+        orderMain.setServiceType(ServiceType.PURCHASE.getCode());
+        orderMain.setOrderSource(1);
+        orderMain.setTag(dto.getTag());
+        orderMain.setWeight(null);
+        orderMain.setDetail(dto.getDetail());
+        orderMain.setGender(2);
+        orderMain.setIsTimed(Status.DISABLE.getCode());
+        orderMain.setSpecifiedTime(null);
+        orderMain.setAutoCancelTtl(dto.getAutoCancelTtl());
+        orderMain.setEstimatedPrice(goodsAmount);
+        orderMain.setGoodsAmount(goodsAmount);
+        orderMain.setTotalAmount(totalAmount);
+        orderMain.setStatus(OrderStatus.PENDING_PAYMENT.getCode());
+        orderMain.setCreateTime(LocalDateTime.now());
+        orderMain.setUserId(uid);
+        orderMain.setRunnerId(null);
+        orderMain.setStartAddress(null);
+        orderMain.setEndAddress(dto.getEndAddress());
+        orderMainMapper.insert(orderMain);
+        Long orderId = orderMain.getId();
+
+        // —— 支付表 ——
+        OrderPayment orderPayment = new OrderPayment();
+        orderPayment.setOrderId(orderId);
+        orderPayment.setAdditionalAmount(additionalAmount);
+        orderPayment.setActualPayment(totalAmount);
+        orderPayment.setPaymentStatus(PayStatus.UNPAID.getCode());
+        orderPayment.setRefundPendingTime(null);
+        orderPayment.setRefundTime(null);
+        orderPayment.setIsCouponed(Status.DISABLE.getCode());
+        orderPayment.setCouponId(null);
+        orderPayment.setDiscountAmount(null);
+        orderPaymentMapper.insert(orderPayment);
+
+        // —— 流程表 ——
+        OrderProgress orderProgress = new OrderProgress();
+        orderProgress.setOrderId(orderId);
+        orderProgress.setAcceptedTime(null);
+        orderProgress.setDeliveredTime(null);
+        orderProgress.setCompletedTime(null);
+        orderProgress.setCompletedType(null);
+        orderProgress.setCancelTime(null);
+        orderProgress.setCancelReason(null);
+        orderProgress.setCancelUserType(null);
+        orderProgress.setCancelUserId(null);
+        orderProgressMapper.insert(orderProgress);
+
+        return orderId;
+    }
+
+    @Override
+    public PayedVO payForOrder(Long orderId, String desc, BigDecimal totalAmount) {
+        OrderMain orderMainDB = orderMainMapper.selectById(orderId);
+        if (ObjectUtil.isEmpty(orderMainDB)) {
+            throw new OrderException("订单不存在");
+        }
+        UserWx userWx = userWxMapper.selectOne(new LambdaQueryWrapper<UserWx>().eq(UserWx::getUid, orderMainDB.getUserId()));
+        PayedVO payedVO = payOrder(orderId, desc, totalAmount, userWx == null ? null : userWx.getOpenid());
+        // 加入超时未支付取消队列
+        QueueUtils.addDelayedQueueObject(
+                QueueNames.ORDER_PAY_CANCEL,
+                String.valueOf(orderId),
+                fuuConfig.getPayCancelTtl(),
+                TimeUnit.MINUTES);
         return payedVO;
     }
 

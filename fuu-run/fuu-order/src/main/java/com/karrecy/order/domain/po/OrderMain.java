@@ -45,6 +45,12 @@ public class OrderMain implements Serializable {
     private Integer serviceType;
 
     /**
+     * 订单来源 0 需求大厅 1 代购商城
+     */
+    @TableField("order_source")
+    private Integer orderSource;
+
+    /**
      * 标签
      */
     @TableField("tag")
@@ -103,6 +109,12 @@ public class OrderMain implements Serializable {
      */
     @TableField("estimated_price")
     private BigDecimal estimatedPrice;
+
+    /**
+     * 商品金额（代购商城订单）
+     */
+    @TableField("goods_amount")
+    private BigDecimal goodsAmount;
 
     /**
      * 订单总金额

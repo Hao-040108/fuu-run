@@ -20,6 +20,8 @@ fuu:
   credit-deduction: 1
   # 用户地址上限
   max-address: 20
+  # 模拟支付开关（开发环境：无微信商户号时下单一律标记为待支付，可通过 POST /dev/mockPay/{orderId} 完成支付闭环）
+  mock-pay-enabled: true
 email:
   host: smtp.example.com
   port: 465
@@ -229,6 +231,8 @@ sa-token:
   is-read-cookie: false
   # token前缀
   token-prefix: "Bearer"
+  # 允许 loginId 包含冒号（Sa-Token 1.46+ 默认禁止；本项目 loginId 格式为 userType:uid）
+  allow-login-id-colon: true
   # jwt秘钥
   jwt-secret-key: fuu-dev-jwt-secret-0123456789abcdef
   auto-renew: true

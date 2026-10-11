@@ -11,6 +11,10 @@ import tools.jackson.databind.ser.std.ToStringSerializer;
 public class PayedVO {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long orderId;
+    /**
+     * 是否为"待支付"状态（开发模式跳过真实预支付时为 true，客户端可稍后调用继续支付）
+     */
+    private Boolean payPending;
     private String appId;
     private String timeStamp;
     private String nonceStr;

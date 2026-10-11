@@ -16,6 +16,7 @@ spring:
       ssl:
         enabled: false
 
+
 redisson:
   # redis key前缀
   keyPrefix:

@@ -55,6 +55,13 @@
             <version>${revision}</version>
         </dependency>
 
+        <!-- 代购商城模块 -->
+        <dependency>
+            <groupId>com.karrecy</groupId>
+            <artifactId>fuu-mall</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
 <!--        <dependency>-->
 <!--            <groupId>com.ruoyi</groupId>-->
 <!--            <artifactId>ruoyi-oss</artifactId>-->
