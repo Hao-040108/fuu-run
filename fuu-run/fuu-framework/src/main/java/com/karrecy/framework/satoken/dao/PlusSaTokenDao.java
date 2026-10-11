@@ -4,6 +4,9 @@ import cn.dev33.satoken.dao.SaTokenDao;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.util.SaFoxUtil;
 import com.karrecy.common.utils.redis.RedisUtils;
+import com.karrecy.common.utils.SpringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import java.util.List;
 /**
  * Sa-Token持久层接口
  */
+@Slf4j
 public class PlusSaTokenDao implements SaTokenDao {
 
     /**
@@ -99,11 +103,24 @@ public class PlusSaTokenDao implements SaTokenDao {
 
     /**
      * 获取指定类型Object（Sa-Token 1.4x 新增；语义参考官方 SaTokenDaoBySessionFollowObject）
+     * <p>Redis 中以纯 JSON 存储（不含类型信息），反序列化后为 Map，这里按目标类型做还原。</p>
      */
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getObject(String key, Class<T> classType) {
-        return (T) RedisUtils.getCacheObject(key);
+        Object obj = RedisUtils.getCacheObject(key);
+        if (obj == null) {
+            return null;
+        }
+        if (classType == null || classType.isInstance(obj)) {
+            return (T) obj;
+        }
+        try {
+            return SpringUtils.getBean(ObjectMapper.class).convertValue(obj, classType);
+        } catch (Exception e) {
+            log.warn("Sa-Token 缓存对象类型还原失败：key={}, target={}, actual={}", key, classType.getName(), obj.getClass().getName());
+            return (T) obj;
+        }
     }
 
     /**
