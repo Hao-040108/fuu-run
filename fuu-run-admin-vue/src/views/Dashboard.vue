@@ -24,9 +24,11 @@
     <el-card shadow="never" style="margin-top: 16px">
       <template #header>快捷入口</template>
       <el-space wrap>
-        <el-button type="primary" @click="$router.push('/goods/list')">商品管理</el-button>
-        <el-button @click="$router.push('/goods/category')">商品分类</el-button>
-        <el-button @click="$router.push('/order/mall')">商城订单</el-button>
+        <el-button type="primary" @click="$router.push('/mall/goods')">商品管理</el-button>
+        <el-button @click="$router.push('/mall/category')">商品分类</el-button>
+        <el-button @click="$router.push('/mall/orders')">商城订单</el-button>
+        <el-button @click="$router.push('/order/list')">订单管理</el-button>
+        <el-button @click="$router.push('/workorder/runnerApply')">跑腿申请</el-button>
         <el-button link type="info" @click="openApiDoc">打开后端接口文档（Swagger）</el-button>
       </el-space>
       <el-divider />

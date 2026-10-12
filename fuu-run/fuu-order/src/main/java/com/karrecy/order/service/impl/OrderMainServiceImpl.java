@@ -426,13 +426,17 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
                         OrderMain::getId,
                         OrderMain::getSchoolId,
                         OrderMain::getServiceType,
+                        OrderMain::getOrderSource,
                         OrderMain::getStatus,
                         OrderMain::getCreateTime,
                         OrderMain::getStartAddress,
                         OrderMain::getEndAddress,
                         OrderMain::getTag,
                         OrderMain::getDetail,
-                        OrderMain::getTotalAmount)
+                        OrderMain::getTotalAmount,
+                        OrderMain::getGoodsAmount,
+                        OrderMain::getUserId,
+                        OrderMain::getRunnerId)
                 .orderByDesc(OrderMain::getCreateTime)
                 .eq(ObjectUtil.isNotNull(orderQuery.getId()), OrderMain::getId, orderQuery.getId())
                 .eq(ObjectUtil.isNotNull(orderQuery.getSchoolId()), OrderMain::getSchoolId, orderQuery.getSchoolId())
