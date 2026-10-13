@@ -69,4 +69,15 @@ public class FuuConfig {
      * 开启后下单不请求微信预支付，可通过 POST /dev/mockPay/{orderId} 模拟支付成功，完成订单闭环
      */
     private Boolean mockPayEnabled;
+
+    /**
+     * 本地文件上传根目录（开发演示用文件存储）：
+     * 商品图片等文件保存到该目录，通过 HTTP 前缀 /uploads/** 直接访问
+     */
+    private String localUploadDir;
+
+    /**
+     * 本地文件对外访问基础地址（用于拼接返回给前端的图片 URL，真机联调时可改为局域网地址）
+     */
+    private String localUploadBaseUrl;
 }

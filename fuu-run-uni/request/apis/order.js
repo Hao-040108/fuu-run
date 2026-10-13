@@ -66,6 +66,14 @@ export const getPayAgain = (params) => {
 	})
 }
 
+//开发环境模拟支付（fuu.mock-pay-enabled=true 时可用，走与微信回调一致的队列链路）
+export const postMockPay = (params) => {
+	return request({
+		url: '/dev/mockPay/' + params,
+		method: 'post',
+	})
+}
+
 //接单
 export const getAccept = (params) => {
 	return request({

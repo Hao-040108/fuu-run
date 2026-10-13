@@ -11,6 +11,7 @@
         style="border-right: none; height: calc(100% - 60px); overflow-y: auto"
       >
         <el-menu-item index="/dashboard">工作台</el-menu-item>
+        <el-menu-item index="/stat">数据统计</el-menu-item>
         <el-sub-menu index="mall">
           <template #title>代购商城</template>
           <el-menu-item index="/mall/category">商品分类</el-menu-item>

@@ -177,7 +177,7 @@
 					uni.showModal({
 						title: '下单成功',
 						content: '订单号：' + data.orderId + '\n合计 ￥' + data.totalAmount +
-							'\n开发环境已开启模拟支付，可在订单详情中完成支付闭环。',
+							'\n开发环境已开启模拟支付，可在订单详情中点击「模拟支付」完成支付闭环。',
 						showCancel: false,
 						success: () => {
 							uni.switchTab({ url: '/pages/tabBar/order/order' })

@@ -95,7 +95,27 @@
           </el-col>
         </el-row>
         <el-form-item label="图片地址">
-          <el-input v-model="form.image" placeholder="图片 URL（可留空，后续可接入 OSS 上传）" />
+          <div style="width: 100%">
+            <el-space alignment="center">
+              <el-image
+                v-if="form.image"
+                :src="form.image"
+                fit="cover"
+                style="width: 64px; height: 64px; border-radius: 6px"
+                :preview-src-list="[form.image]"
+                preview-teleported
+              />
+              <el-upload :show-file-list="false" :before-upload="onUploadImage" accept="image/*">
+                <el-button :loading="uploading">上传图片</el-button>
+              </el-upload>
+              <el-button v-if="form.image" link type="danger" @click="form.image = ''">清除</el-button>
+            </el-space>
+            <el-input
+              v-model="form.image"
+              placeholder="图片 URL（可点击左侧上传，或手动粘贴地址；留空使用占位图）"
+              style="margin-top: 8px"
+            />
+          </div>
         </el-form-item>
         <el-form-item label="商品描述">
           <el-input v-model="form.description" type="textarea" :rows="2" />
@@ -127,11 +147,13 @@ import {
   editGoods,
   listCategory,
   pageGoods,
-  removeGoods
+  removeGoods,
+  uploadGoodsImage
 } from '../../api/mall'
 
 const loading = ref(false)
 const saving = ref(false)
+const uploading = ref(false)
 const rows = ref([])
 const total = ref(0)
 const categories = ref([])
@@ -204,6 +226,21 @@ const openDialog = (row) => {
     sort: row ? row.sort : 0
   })
   dialogVisible.value = true
+}
+
+// 图片上传（开发演示：本地文件存储 /mall/admin/upload/image，返回可直接访问的 URL）
+const onUploadImage = async (file) => {
+  const fd = new FormData()
+  fd.append('file', file)
+  uploading.value = true
+  try {
+    const res = await uploadGoodsImage(fd)
+    form.image = res.data || ''
+    ElMessage.success('图片上传成功')
+  } finally {
+    uploading.value = false
+  }
+  return false
 }
 
 const onSave = async () => {

@@ -38,6 +38,11 @@ public class OrderQuery implements Serializable {
     private Integer serviceType;
 
     /**
+     * 订单来源 0 需求大厅 1 代购商城
+     */
+    private Integer orderSource;
+
+    /**
      * 标签
      */
     private String tag;

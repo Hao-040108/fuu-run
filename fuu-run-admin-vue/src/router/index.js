@@ -15,6 +15,11 @@ const routes = [
         component: () => import('../views/Dashboard.vue'),
         meta: { title: '工作台' }
       },
+      {
+        path: 'stat',
+        component: () => import('../views/stat/Statistics.vue'),
+        meta: { title: '数据统计' }
+      },
       // 代购商城
       {
         path: 'mall/category',

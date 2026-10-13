@@ -22,6 +22,7 @@
 		</template>
 		<nut-menu-item @change="chooseStatus" v-model="state.value1" :options="state.status" />
 		<nut-menu-item @change="chooseOrderOrTake" v-model="state.value2" :options="state.orderOrTake" />
+		<nut-menu-item @change="chooseOrderSource" v-model="state.value3" :options="state.orderSource" />
 	</nut-menu>
 
 	
@@ -39,9 +40,12 @@
 		
 		<div class="box"  v-for="(item, index) in rows" :key="index">
 			<div class="orderTop">
-				<nut-tag v-if="item.serviceType == 0" custom-color="#e9f7ff" text-color="#248fce">帮取送</nut-tag>
-				<nut-tag v-if="item.serviceType == 1" custom-color="#f9e2c0" text-color="#ef940d">帮买</nut-tag>
-				<nut-tag v-if="item.serviceType == 2" custom-color="#f9dfff" text-color="#e077ec">万能帮</nut-tag>
+				<nut-tag v-if="item.orderSource == 1" custom-color="#fff3e0" text-color="#d46b08">商城代购</nut-tag>
+				<template v-else>
+					<nut-tag v-if="item.serviceType == 0" custom-color="#e9f7ff" text-color="#248fce">帮取送</nut-tag>
+					<nut-tag v-if="item.serviceType == 1" custom-color="#f9e2c0" text-color="#ef940d">帮买</nut-tag>
+					<nut-tag v-if="item.serviceType == 2" custom-color="#f9dfff" text-color="#e077ec">万能帮</nut-tag>
+				</template>
 				<span class="tag">{{item.tag}}</span>
 				<span v-if="item.status == 0" class="status">待支付</span>
 				<span v-if="item.status == 1" class="status">待接单</span>
@@ -166,8 +170,22 @@
 							value: 1
 						}
 					],
+					orderSource: [{
+							text: '全部来源',
+							value: null
+						},
+						{
+							text: '需求大厅',
+							value: 0
+						},
+						{
+							text: '代购商城',
+							value: 1
+						}
+					],
 					value1: null,
-					value2: 0
+					value2: 0,
+					value3: null
 				},
 				currSchool: null,
 				tabValue: 0,
@@ -176,6 +194,7 @@
 					schoolId: null,
 					status: null,
 					orderOrTake: 0,
+					orderSource: null,
 					beginTime: null,
 					endTime: null,
 					pageSize: 20,
@@ -230,6 +249,12 @@
 			chooseStatus(e) {
 				console.log(e); 
 				this.queryParams.status = e
+				this.resizePage()
+				this.skeletonLoading = true
+				this.getList()
+			},
+			chooseOrderSource(e) {
+				this.queryParams.orderSource = e
 				this.resizePage()
 				this.skeletonLoading = true
 				this.getList()

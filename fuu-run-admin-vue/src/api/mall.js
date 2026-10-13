@@ -17,3 +17,12 @@ export const changeGoodsStatus = (id, status) =>
 // ==================== 商城订单 ====================
 export const pageMallOrders = (params) => request.get('/mall/admin/order/list', { params })
 export const mallOrderDetail = (orderId) => request.get(`/mall/admin/order/detail/${orderId}`)
+
+// ==================== 数据统计 ====================
+export const statSummary = () => request.get('/mall/admin/stat/summary')
+export const statCharts = (params) => request.get('/mall/admin/stat/charts', { params })
+export const generateStat = (params) => request.post('/mall/admin/stat/generate', null, { params })
+
+// ==================== 本地图片上传（开发演示环境） ====================
+export const uploadGoodsImage = (formData) =>
+  request.post('/mall/admin/upload/image', formData, { headers: { 'Content-Type': 'multipart/form-data' } })

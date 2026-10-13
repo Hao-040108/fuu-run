@@ -35,6 +35,11 @@
 					<nut-icon custom-color="#1296db" name="/static/icons/微信支付.png"></nut-icon>
 					<span style="color: #1296db;" class="o">继续付款</span>
 				</div>
+				<!-- 开发演示：模拟支付按钮（对应后端 fuu.mock-pay-enabled=true，走真实支付回调队列） -->
+				<div v-if="devMockPay" @click="mockPay" class="oprea">
+					<nut-icon custom-color="#d46b08" name="/static/icons/微信支付.png"></nut-icon>
+					<span style="color: #d46b08;" class="o">模拟支付</span>
+				</div>
 				<div @click="visibleCancelDialog = true" class="oprea">
 					<nut-icon custom-color="#8a8a8a" name="/static/icons/取消订单.png"></nut-icon>
 					<span style="color: #8a8a8a;" class="o">取消订单</span>
@@ -432,10 +437,11 @@
 	dayjs.extend(relativeTime);
 	// 设置为中文
 	dayjs.locale('zh-cn');
-	import {getCancelBefore,getDetailOrderUser,getPayAgain,postCancelOrder,getConfirmOrder,getPhoneOrder,getAppealOrder} from '@/request/apis/order.js'
+	import {getCancelBefore,getDetailOrderUser,getPayAgain,postCancelOrder,getConfirmOrder,getPhoneOrder,getAppealOrder,postMockPay} from '@/request/apis/order.js'
 	export default {
 		data() {
 			return {
+				devMockPay: true, // 开发演示：显示"模拟支付"按钮（需后端 fuu.mock-pay-enabled=true）
 				showPricePopup:false,
 				visible1:false,
 				appealList:[],
@@ -769,6 +775,26 @@
 							})
 						}
 					});
+				}).catch(err => {
+					uni.showToast({
+						title:err,
+						icon:'none',
+						duration:3000
+					})
+				})
+			},
+			// 开发演示：触发后端模拟支付（与微信支付回调走同一条队列链路）
+			mockPay() {
+				let that = this
+				postMockPay(this.order.orderMain.id).then(res => {
+					uni.showToast({
+						title: res.msg || '已触发模拟支付',
+						icon:'none',
+						duration:2000
+					})
+					setTimeout(() => {
+						that.getDetail(that.order.orderMain.id)
+					}, 1800)
 				}).catch(err => {
 					uni.showToast({
 						title:err,

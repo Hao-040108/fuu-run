@@ -1,5 +1,11 @@
 <template>
 
+	<nut-menu>
+		<template #icon>
+			<nut-icon name="triangle-down" />
+		</template>
+		<nut-menu-item @change="chooseOrderSource" v-model="state.value1" :options="state.orderSource" />
+	</nut-menu>
 
 	<nut-tabs v-model="tabValue" @change="tabChange">
 		<nut-tab-pane title="全部订单">
@@ -8,9 +14,12 @@
 			</div>
 			<div v-show="!skeletonLoading" class="box"  v-for="(item, index) in rows" :key="index">
 				<div class="orderTop">
-					<nut-tag v-if="item.serviceType == 0" custom-color="#e9f7ff" text-color="#248fce">帮取送</nut-tag>
-					<nut-tag v-if="item.serviceType == 1" custom-color="#f9e2c0" text-color="#ef940d">帮买</nut-tag>
-					<nut-tag v-if="item.serviceType == 2" custom-color="#f9dfff" text-color="#e077ec">万能帮</nut-tag>
+					<nut-tag v-if="item.orderSource == 1" custom-color="#fff3e0" text-color="#d46b08">商城代购</nut-tag>
+					<template v-else>
+						<nut-tag v-if="item.serviceType == 0" custom-color="#e9f7ff" text-color="#248fce">帮取送</nut-tag>
+						<nut-tag v-if="item.serviceType == 1" custom-color="#f9e2c0" text-color="#ef940d">帮买</nut-tag>
+						<nut-tag v-if="item.serviceType == 2" custom-color="#f9dfff" text-color="#e077ec">万能帮</nut-tag>
+					</template>
 					<span class="tag">{{item.tag}}</span>
 					<span v-if="item.status == 0" class="status">待支付</span>
 					<span v-if="item.status == 1" class="status">待接单</span>
@@ -59,9 +68,12 @@
 			</div>
 			<div v-show="!skeletonLoading" class="box"  v-for="(item, index) in rows" :key="index">
 				<div class="orderTop">
-					<nut-tag v-if="item.serviceType == 0" custom-color="#e9f7ff" text-color="#248fce">帮取送</nut-tag>
-					<nut-tag v-if="item.serviceType == 1" custom-color="#f9e2c0" text-color="#ef940d">帮买</nut-tag>
-					<nut-tag v-if="item.serviceType == 2" custom-color="#f9dfff" text-color="#e077ec">万能帮</nut-tag>
+					<nut-tag v-if="item.orderSource == 1" custom-color="#fff3e0" text-color="#d46b08">商城代购</nut-tag>
+					<template v-else>
+						<nut-tag v-if="item.serviceType == 0" custom-color="#e9f7ff" text-color="#248fce">帮取送</nut-tag>
+						<nut-tag v-if="item.serviceType == 1" custom-color="#f9e2c0" text-color="#ef940d">帮买</nut-tag>
+						<nut-tag v-if="item.serviceType == 2" custom-color="#f9dfff" text-color="#e077ec">万能帮</nut-tag>
+					</template>
 					<span class="tag">{{item.tag}}</span>
 					<span v-if="item.status == 0" class="status">待支付</span>
 					<span v-if="item.status == 1" class="status">待接单</span>
@@ -126,9 +138,26 @@
 				currSchool: null,
 				tabValue: 0,
 				title: 'Hello',
+				state: {
+					orderSource: [{
+							text: '全部来源',
+							value: null
+						},
+						{
+							text: '需求大厅',
+							value: 0
+						},
+						{
+							text: '代购商城',
+							value: 1
+						}
+					],
+					value1: null
+				},
 				queryParams: {
 					schoolId: null,
 					status: null,
+					orderSource: null,
 					pageSize: 20,
 					pageNum: 1
 				},
@@ -163,6 +192,12 @@
 				let key = e.paneKey
 				if(key == '0') this.queryParams.status = null
 				if(key == '1') this.queryParams.status = 1
+				this.resizePage()
+				this.skeletonLoading = true
+				this.getList()
+			},
+			chooseOrderSource(e) {
+				this.queryParams.orderSource = e
 				this.resizePage()
 				this.skeletonLoading = true
 				this.getList()

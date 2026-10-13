@@ -16,6 +16,12 @@
           <el-option label="万能帮" :value="2" />
         </el-select>
       </el-form-item>
+      <el-form-item label="来源">
+        <el-select v-model="query.orderSource" placeholder="全部" clearable style="width: 130px">
+          <el-option label="需求大厅" :value="0" />
+          <el-option label="代购商城" :value="1" />
+        </el-select>
+      </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="query.status" placeholder="全部" clearable style="width: 130px">
           <el-option v-for="(label, code) in STATUS_MAP" :key="code" :label="label" :value="Number(code)" />
@@ -117,6 +123,7 @@ const query = reactive({
   id: '',
   schoolId: null,
   serviceType: null,
+  orderSource: null,
   status: null
 })
 
@@ -129,6 +136,7 @@ const load = async () => {
       id: query.id || undefined,
       schoolId: query.schoolId || undefined,
       serviceType: query.serviceType === null ? undefined : query.serviceType,
+      orderSource: query.orderSource === null ? undefined : query.orderSource,
       status: query.status === null ? undefined : query.status
     })
     rows.value = res.rows || []
@@ -147,6 +155,7 @@ const reset = () => {
   query.id = ''
   query.schoolId = null
   query.serviceType = null
+  query.orderSource = null
   query.status = null
   search()
 }

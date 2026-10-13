@@ -22,6 +22,10 @@ fuu:
   max-address: 20
   # 模拟支付开关（开发环境：无微信商户号时下单一律标记为待支付，可通过 POST /dev/mockPay/{orderId} 完成支付闭环）
   mock-pay-enabled: true
+  # 本地文件上传根目录（开发演示：不依赖云 OSS，商品图片等文件保存到该目录）
+  local-upload-dir: C:/Users/12487/Desktop/bishe/work/uploads
+  # 本地文件对外访问基础地址（用于拼接返回给前端的 URL；真机联调可改成本机局域网 IP）
+  local-upload-base-url: http://localhost:8081
 email:
   host: smtp.example.com
   port: 465

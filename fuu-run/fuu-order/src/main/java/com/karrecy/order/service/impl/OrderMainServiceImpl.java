@@ -443,6 +443,7 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
                 .eq(ObjectUtil.isNotNull(orderQuery.getOrderUid()), OrderMain::getUserId, orderQuery.getOrderUid())
                 .eq(ObjectUtil.isNotNull(orderQuery.getTakerUid()), OrderMain::getRunnerId, orderQuery.getTakerUid())
                 .eq(ObjectUtil.isNotNull(orderQuery.getServiceType()), OrderMain::getServiceType, orderQuery.getServiceType())
+                .eq(ObjectUtil.isNotNull(orderQuery.getOrderSource()), OrderMain::getOrderSource, orderQuery.getOrderSource())
                 .between(ObjectUtil.isNotNull(orderQuery.getBeginTime()), OrderMain::getCreateTime, orderQuery.getBeginTime(), orderQuery.getEndTime())
                 .eq(ObjectUtil.isNotNull(orderQuery.getStatus()), OrderMain::getStatus, orderQuery.getStatus());
 
@@ -463,6 +464,7 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
 //                        OrderMain::getSchoolId,
                         OrderMain::getDetail,
                         OrderMain::getServiceType,
+                        OrderMain::getOrderSource,
                         OrderMain::getStatus,
                         OrderMain::getCreateTime,
                         OrderMain::getStartAddress,
@@ -470,6 +472,7 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
                         OrderMain::getTag,
                         OrderMain::getTotalAmount)
                 .orderByDesc(OrderMain::getCreateTime)
+                .eq(ObjectUtil.isNotNull(orderQuery.getOrderSource()), OrderMain::getOrderSource, orderQuery.getOrderSource())
                 .eq(ObjectUtil.isNotNull(orderQuery.getStatus()), OrderMain::getStatus, orderQuery.getStatus());
 
         if (ObjectUtil.equals(orderQuery.getOrderOrTake(),0)) {
