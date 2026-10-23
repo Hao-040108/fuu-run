@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "校园代购平台 - Vue3 管理后台（fuu-run 二创版）",
+  "description": "校园互助任务众包平台 - Vue3 管理后台（fuu-run 二创版）",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

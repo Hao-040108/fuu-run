@@ -41,7 +41,20 @@ INSERT INTO `oss` (`id`, `file_size`, `file_name`, `type`, `original_name`, `fil
 VALUES (900001, 1024, 'dev-proof.png', 0, 'dev-proof.png', 'png', 'https://dev.local/proof.png', NOW(), '100', 'minio')
 ON DUPLICATE KEY UPDATE `update_time` = NOW();
 
--- 5. 校区代理（学校4 归属人 uid=226）测试钱包，用于订单确认后的三方分账
+-- 5. 纠纷调解员账号 mediator/admin123（uid=300，user_type=6）
+INSERT INTO `user` (`uid`, `device_type`, `create_time`, `login_time`, `login_ip`, `login_region`, `user_type`, `create_id`, `update_time`, `update_id`)
+VALUES (300, 0, NOW(), NOW(), '127.0.0.1', '本地', 6, 100, NOW(), 100)
+ON DUPLICATE KEY UPDATE `user_type` = 6, `update_time` = NOW();
+
+INSERT INTO `user_pc` (`uid`, `username`, `password`, `phone`, `name`, `sex`, `status`, `avatar`)
+VALUES (300, 'mediator', '$2a$10$ZRHGLKpQvraSkVwM8hZEEefZ8fS1yR5xBKCJ738O2cdikxz8NhE.G', '13700000000', '纠纷调解员', 2, 1, '')
+ON DUPLICATE KEY UPDATE `password` = VALUES(`password`), `status` = 1;
+
 INSERT INTO `wallet` (`uid`, `withdrawn`, `balance`, `create_time`, `update_time`)
-VALUES (226, 0.00, 0.00, NOW(), NOW())
+VALUES (300, 0.00, 0.00, NOW(), NOW())
 ON DUPLICATE KEY UPDATE `update_time` = NOW();
+
+INSERT INTO `role_perm` (`role_id`, `perm_id`)
+SELECT 6, `id` FROM `perm`
+WHERE `perms` IN ('getInfo','order:appeal:view','order:appeal:list','order:appeal:get','order:appeal:edit','order:order:detail','order:order:phone','order:order:view','order:order:list:hall')
+ON DUPLICATE KEY UPDATE `role_id` = `role_id`;

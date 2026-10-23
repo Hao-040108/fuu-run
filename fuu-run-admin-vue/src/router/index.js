@@ -20,22 +20,6 @@ const routes = [
         component: () => import('../views/stat/Statistics.vue'),
         meta: { title: '数据统计' }
       },
-      // 代购商城
-      {
-        path: 'mall/category',
-        component: () => import('../views/goods/CategoryList.vue'),
-        meta: { title: '商品分类' }
-      },
-      {
-        path: 'mall/goods',
-        component: () => import('../views/goods/GoodsList.vue'),
-        meta: { title: '商品管理' }
-      },
-      {
-        path: 'mall/orders',
-        component: () => import('../views/order/MallOrderList.vue'),
-        meta: { title: '商城订单' }
-      },
       // 订单管理
       {
         path: 'order/list',
@@ -61,7 +45,7 @@ const routes = [
       {
         path: 'workorder/appeal',
         component: () => import('../views/workorder/OrderAppeal.vue'),
-        meta: { title: '订单申诉' }
+        meta: { title: '纠纷调解' }
       },
       // 用户管理
       {

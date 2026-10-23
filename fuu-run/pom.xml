@@ -296,7 +296,6 @@
         <module>fuu-framework</module>
         <module>fuu-system</module>
         <module>fuu-order</module>
-        <module>fuu-mall</module>
         <module>fuu-payment</module>
         <module>fuu-common</module>
 <!--        <module>ruoyi-demo</module>-->

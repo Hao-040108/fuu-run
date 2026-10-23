@@ -10,7 +10,7 @@
 		{
 			"path": "pages/tabBar/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app",
+				"navigationBarTitleText": "校园互助",
 				"navigationStyle": "custom"
 			}
 			
@@ -35,14 +35,14 @@
 		{
 			"path": "pages/API/school/select/select",
 			"style": {
-				"navigationBarTitleText": "uni-app",
+				"navigationBarTitleText": "订单大厅",
 				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/API/order/qusong/qusong",
 			"style": {
-				"navigationBarTitleText": "帮取送",
+				"navigationBarTitleText": "代拿",
 				"navigationBarTextStyle": "white",
 				"navigationStyle": "default",
 				"backgroundColorBottom": "#f8f8f8",
@@ -53,7 +53,7 @@
 		{
 			"path": "pages/API/order/bangmai/bangmai",
 			"style": {
-				"navigationBarTitleText": "帮买",
+				"navigationBarTitleText": "代购",
 				"navigationBarTextStyle": "white",
 				"navigationStyle": "default",
 				"backgroundColorBottom": "#f8f8f8",
@@ -64,7 +64,7 @@
 		{
 			"path": "pages/API/order/wanneng/wanneng",
 			"style": {
-				"navigationBarTitleText": "万能帮",
+				"navigationBarTitleText": "其他服务",
 				"navigationBarTextStyle": "white",
 				"navigationStyle": "default",
 				"backgroundColorBottom": "#f8f8f8",
@@ -75,7 +75,7 @@
 		{
 			"path": "pages/API/order/test/test",
 			"style": {
-				"navigationBarTitleText": "万能帮",
+				"navigationBarTitleText": "其他服务",
 				"navigationBarTextStyle": "white",
 				"navigationStyle": "default",
 				"backgroundColorBottom": "#f8f8f8",
@@ -202,31 +202,6 @@
 				"navigationBarTitleText": "用户协议"
 			}
 		}
-		,
-		{
-			"path": "pages/API/mall/index",
-			"style": {
-				"navigationBarTitleText": "代购商城"
-			}
-		},
-		{
-			"path": "pages/API/mall/detail",
-			"style": {
-				"navigationBarTitleText": "商品详情"
-			}
-		},
-		{
-			"path": "pages/API/mall/cart",
-			"style": {
-				"navigationBarTitleText": "购物车"
-			}
-		},
-		{
-			"path": "pages/API/mall/settle",
-			"style": {
-				"navigationBarTitleText": "确认订单"
-			}
-		}
 	],
 	"tabBar": {
 	    "list": [
@@ -252,7 +227,7 @@
 	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
+		"navigationBarTitleText": "校园互助",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	},

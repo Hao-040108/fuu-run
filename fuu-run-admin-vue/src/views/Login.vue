@@ -2,7 +2,7 @@
   <div class="login-page">
     <el-card class="login-card">
       <template #header>
-        <div class="login-title">校园代购平台 · 管理后台</div>
+        <div class="login-title">校园互助任务众包平台</div>
       </template>
       <el-form ref="formRef" :model="form" :rules="rules" label-position="top" @keyup.enter="onSubmit">
         <el-form-item label="账号" prop="username">

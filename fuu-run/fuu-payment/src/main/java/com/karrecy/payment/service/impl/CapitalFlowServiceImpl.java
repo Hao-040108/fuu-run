@@ -48,12 +48,12 @@ public class CapitalFlowServiceImpl extends ServiceImpl<CapitalFlowMapper, Capit
 
         LoginUser loginUser = LoginHelper.getLoginUser();
         if (loginUser.getDeviceType().equals(DeviceType.PC.getDevice())) {
-            if (loginUser.getUserType().equals(UserType.SCHOOL_AGENT.getUserType())) {
-                lqm.eq(CapitalFlow::getAgentId, loginUser.getUid());
-            } else if (loginUser.getUserType().equals(UserType.SUPER_ADMIN.getUserType())) {
+            if (loginUser.getUserType().equals(UserType.SUPER_ADMIN.getUserType())) {
                 lqm.eq(ObjectUtil.isNotNull(capitalFlow.getAgentId()), CapitalFlow::getAgentId, capitalFlow.getAgentId());
                 lqm.eq(ObjectUtil.isNotNull(capitalFlow.getRunnerId()), CapitalFlow::getRunnerId, capitalFlow.getRunnerId());
                 lqm.eq(ObjectUtil.isNotNull(capitalFlow.getUserId()), CapitalFlow::getUserId, capitalFlow.getUserId());
+            } else {
+                throw new ServiceException("没有该权限");
             }
         } else if (loginUser.getDeviceType().equals(DeviceType.WX.getDevice())) {
             lqm.eq(CapitalFlow::getRunnerId, loginUser.getUid());

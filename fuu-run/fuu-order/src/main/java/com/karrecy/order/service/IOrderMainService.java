@@ -7,7 +7,6 @@ import com.karrecy.order.domain.dto.OrderCancelDTO;
 import com.karrecy.order.domain.dto.OrderCompleteDTO;
 import com.karrecy.order.domain.dto.OrderQuery;
 import com.karrecy.order.domain.dto.OrderSubmitDTO;
-import com.karrecy.order.domain.dto.MallOrderCreateDTO;
 import com.karrecy.order.domain.po.OrderChat;
 import com.karrecy.order.domain.po.OrderMain;
 import com.baomidou.mybatisplus.spring.service.IService;
@@ -132,14 +131,6 @@ public interface IOrderMainService extends IService<OrderMain> {
     void calculateFinancialStatistics(StatisticsDaily statistics, LocalDate lastDay, LocalDate today);
 
     void confirmTest(Long orderId);
-
-    /**
-     * 创建代购商城订单（商品明细、库存扣减等由商城模块补充）
-     *
-     * @param dto 商城订单构建参数
-     * @return 订单id
-     */
-    Long createMallOrder(MallOrderCreateDTO dto);
 
     /**
      * 对已创建订单发起支付（开发模式 fuu.mock-pay-enabled=true 时返回 payPending 占位对象），

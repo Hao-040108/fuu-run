@@ -264,7 +264,7 @@
 				],
 				currSchool:null, //当前校区
 				submitForm:{
-					serviceType:2 , // 万能帮
+					serviceType:2 , // 其他服务
 					schoolId:null, // 学校id
 					weight:null,  // 物品重量
 					detail:'',  // 订单详情

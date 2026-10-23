@@ -1,4 +1,4 @@
-package com.karrecy.admin.controller.mall;
+package com.karrecy.admin.controller.stat;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -7,15 +7,15 @@ import com.karrecy.admin.schedule.StatisticsService;
 import com.karrecy.common.core.controller.BaseController;
 import com.karrecy.common.core.domain.R;
 import com.karrecy.common.core.domain.entity.StatisticsDaily;
+import com.karrecy.common.core.domain.entity.UserWx;
 import com.karrecy.common.enums.OrderStatus;
 import com.karrecy.common.enums.Status;
-import com.karrecy.mall.domain.po.Goods;
-import com.karrecy.mall.domain.po.GoodsCategory;
-import com.karrecy.mall.mapper.GoodsCategoryMapper;
-import com.karrecy.mall.mapper.GoodsMapper;
+import com.karrecy.order.domain.po.OrderAppeal;
 import com.karrecy.order.domain.po.OrderMain;
+import com.karrecy.order.mapper.OrderAppealMapper;
 import com.karrecy.order.mapper.OrderMainMapper;
 import com.karrecy.system.mapper.StatisticsDailyMapper;
+import com.karrecy.system.mapper.UserWxMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,84 +36,71 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * 管理端数据统计
- * <p>summary：实时概览（订单/金额/来源分布/商品）；
- * charts：日趋势（statistics_daily 聚合表）+ 来源分布 + 分类销量 + 热销商品；
- * generate：按日补算统计数据（含今天），供演示/论文截图准备数据。</p>
+ * 管理端任务统计（统一任务域：代拿 / 代购 / 其他服务）
  */
 @RestController
-@RequestMapping("/mall/admin/stat")
+@RequestMapping("/order/admin/stat")
 @RequiredArgsConstructor
 @Slf4j
 public class StatController extends BaseController {
 
     private final StatisticsService statisticsService;
     private final OrderMainMapper orderMainMapper;
-    private final GoodsMapper goodsMapper;
-    private final GoodsCategoryMapper goodsCategoryMapper;
+    private final OrderAppealMapper orderAppealMapper;
+    private final UserWxMapper userWxMapper;
     private final StatisticsDailyMapper statisticsDailyMapper;
 
     /**
      * 实时概览（顶部卡片）
      */
     @GetMapping("/summary")
-    @SaCheckPermission("mall:stat:list")
+    @SaCheckPermission("order:order:list:hall")
     public R<Map<String, Object>> summary() {
         Map<String, Object> result = new LinkedHashMap<>();
         LocalDateTime todayStart = LocalDate.now().atStartOfDay();
 
-        // 今日订单量与金额
         Map<String, Object> today = firstRow(orderMainMapper.selectMaps(new QueryWrapper<OrderMain>()
                 .select("count(*) as cnt", "ifnull(sum(total_amount),0) as amt")
                 .ge("create_time", todayStart)));
-        result.put("todayOrders", toLong(today.get("cnt")));
+        result.put("todayTasks", toLong(today.get("cnt")));
         result.put("todayAmount", toDecimal(today.get("amt")));
 
-        // 累计订单量与金额
         Map<String, Object> all = firstRow(orderMainMapper.selectMaps(new QueryWrapper<OrderMain>()
                 .select("count(*) as cnt", "ifnull(sum(total_amount),0) as amt")));
-        long totalOrders = toLong(all.get("cnt"));
-        result.put("totalOrders", totalOrders);
+        long totalTasks = toLong(all.get("cnt"));
+        result.put("totalTasks", totalTasks);
         result.put("totalAmount", toDecimal(all.get("amt")));
 
-        // 来源分布
-        long mallOrders = orderMainMapper.selectCount(new LambdaQueryWrapper<OrderMain>()
-                .eq(OrderMain::getOrderSource, 1));
-        result.put("mallOrders", mallOrders);
-        result.put("hallOrders", Math.max(0, totalOrders - mallOrders));
-
-        // 完单率（%）
         long completed = orderMainMapper.selectCount(new LambdaQueryWrapper<OrderMain>()
                 .eq(OrderMain::getStatus, OrderStatus.COMPLETED.getCode()));
-        result.put("completedOrders", completed);
-        result.put("completionRate", totalOrders == 0 ? BigDecimal.ZERO
-                : BigDecimal.valueOf(completed * 100.0 / totalOrders).setScale(1, RoundingMode.HALF_UP));
+        result.put("completedTasks", completed);
+        result.put("completionRate", totalTasks == 0 ? BigDecimal.ZERO
+                : BigDecimal.valueOf(completed * 100.0 / totalTasks).setScale(1, RoundingMode.HALF_UP));
 
-        // 商品侧
-        long goodsCount = goodsMapper.selectCount(new LambdaQueryWrapper<Goods>());
-        long onSale = goodsMapper.selectCount(new LambdaQueryWrapper<Goods>()
-                .eq(Goods::getStatus, Status.OK.getCode()));
-        long stockWarning = goodsMapper.selectCount(new LambdaQueryWrapper<Goods>()
-                .isNotNull(Goods::getStock)
-                .ge(Goods::getStock, 0)
-                .le(Goods::getStock, 5));
-        result.put("goodsCount", goodsCount);
-        result.put("goodsOnSale", onSale);
-        result.put("stockWarning", stockWarning);
+        long pendingAccept = orderMainMapper.selectCount(new LambdaQueryWrapper<OrderMain>()
+                .eq(OrderMain::getStatus, OrderStatus.PENDING_ACCEPTANCE.getCode()));
+        result.put("pendingAccept", pendingAccept);
+
+        long disputePending = orderAppealMapper.selectCount(new LambdaQueryWrapper<OrderAppeal>()
+                .eq(OrderAppeal::getAppealStatus, 2));
+        result.put("disputePending", disputePending);
+
+        long runnerCount = userWxMapper.selectCount(new LambdaQueryWrapper<UserWx>()
+                .eq(UserWx::getIsRunner, Status.OK.getCode()));
+        result.put("runnerCount", runnerCount);
         return R.ok(result);
     }
 
     /**
-     * 图表数据：日趋势 + 来源分布 + 分类销量 + 热销商品
+     * 图表数据：日趋势 + 任务类型分布 + 跑腿员接单榜
      */
     @GetMapping("/charts")
-    @SaCheckPermission("mall:stat:list")
+    @SaCheckPermission("order:order:list:hall")
     public R<Map<String, Object>> charts(@RequestParam(value = "days", defaultValue = "14") Integer days) {
         int d = Math.max(7, Math.min(days, 30));
         LocalDate from = LocalDate.now().minusDays(d - 1L);
         Map<String, Object> result = new LinkedHashMap<>();
 
-        // 1) 日趋势（statistics_daily 由定时任务/补算写入）
         List<StatisticsDaily> daily = statisticsDailyMapper.selectList(new LambdaQueryWrapper<StatisticsDaily>()
                 .ge(StatisticsDaily::getCreateTime, from)
                 .orderByAsc(StatisticsDaily::getCreateTime));
@@ -121,8 +108,8 @@ public class StatController extends BaseController {
         for (StatisticsDaily s : daily) {
             Map<String, Object> item = new LinkedHashMap<>();
             item.put("date", s.getCreateTime() == null ? null : s.getCreateTime().toString());
-            item.put("totalOrders", s.getTotalOrders());
-            item.put("completedOrders", s.getCompletedOrders());
+            item.put("totalTasks", s.getTotalOrders());
+            item.put("completedTasks", s.getCompletedOrders());
             item.put("totalPayment", s.getTotalPayment() == null ? BigDecimal.ZERO : s.getTotalPayment());
             item.put("newUsers", s.getNewUsers());
             item.put("completionRate", s.getCompletionRate() == null ? BigDecimal.ZERO
@@ -131,58 +118,52 @@ public class StatController extends BaseController {
         }
         result.put("daily", trend);
 
-        // 2) 来源分布（实时）
-        long mall = orderMainMapper.selectCount(new LambdaQueryWrapper<OrderMain>()
-                .eq(OrderMain::getOrderSource, 1));
-        long hall = orderMainMapper.selectCount(new LambdaQueryWrapper<OrderMain>()
-                .ne(OrderMain::getOrderSource, 1));
-        List<Map<String, Object>> sourceSplit = new ArrayList<>();
-        sourceSplit.add(itemOf("需求大厅", hall));
-        sourceSplit.add(itemOf("代购商城", mall));
-        result.put("sourceSplit", sourceSplit);
-
-        // 3) 分类销量（goods 表聚合）
-        Map<Long, String> categoryNames = goodsCategoryMapper.selectList(null).stream()
-                .collect(Collectors.toMap(GoodsCategory::getId, GoodsCategory::getName, (a, b) -> a));
-        List<Map<String, Object>> rows = goodsMapper.selectMaps(new QueryWrapper<Goods>()
-                .select("category_id", "ifnull(sum(sales),0) as total_sales", "count(*) as goods_count")
-                .groupBy("category_id"));
-        List<Map<String, Object>> categorySales = new ArrayList<>();
-        for (Map<String, Object> row : rows) {
-            Long categoryId = toLong(row.get("category_id"));
-            Map<String, Object> item = new LinkedHashMap<>();
-            item.put("name", categoryNames.getOrDefault(categoryId, "未分类"));
-            item.put("value", toLong(row.get("total_sales")));
-            item.put("goodsCount", toLong(row.get("goods_count")));
-            categorySales.add(item);
+        // 任务类型分布（0 代拿 / 1 代购 / 2 其他服务）
+        String[] typeNames = {"代拿", "代购", "其他服务"};
+        List<Map<String, Object>> typeSplit = new ArrayList<>();
+        for (int type = 0; type < 3; type++) {
+            long count = orderMainMapper.selectCount(new LambdaQueryWrapper<OrderMain>()
+                    .eq(OrderMain::getServiceType, type));
+            typeSplit.add(itemOf(typeNames[type], count));
         }
-        categorySales.sort((a, b) -> Long.compare((Long) b.get("value"), (Long) a.get("value")));
-        result.put("categorySales", categorySales);
+        result.put("typeSplit", typeSplit);
 
-        // 4) 热销商品 Top8（实时）
-        List<Goods> topGoods = goodsMapper.selectList(new LambdaQueryWrapper<Goods>()
-                .select(Goods::getId, Goods::getName, Goods::getSales, Goods::getStock, Goods::getPrice, Goods::getCategoryId)
-                .orderByDesc(Goods::getSales)
+        // 跑腿员接单榜（已完成任务数）
+        List<Map<String, Object>> rows = orderMainMapper.selectMaps(new QueryWrapper<OrderMain>()
+                .select("runner_id", "count(*) as task_count")
+                .isNotNull("runner_id")
+                .eq("status", OrderStatus.COMPLETED.getCode())
+                .groupBy("runner_id")
+                .orderByDesc("task_count")
                 .last("limit 8"));
-        List<Map<String, Object>> topList = new ArrayList<>();
-        for (Goods g : topGoods) {
-            Map<String, Object> item = new LinkedHashMap<>();
-            item.put("id", g.getId());
-            item.put("name", g.getName());
-            item.put("sales", g.getSales());
-            item.put("stock", g.getStock());
-            item.put("price", g.getPrice());
-            topList.add(item);
+        List<Long> runnerIds = rows.stream().map((r) -> toLong(r.get("runner_id"))).collect(Collectors.toList());
+        Map<Long, String> runnerNames = Collections.emptyMap();
+        if (!runnerIds.isEmpty()) {
+            List<UserWx> wxUsers = userWxMapper.selectList(new LambdaQueryWrapper<UserWx>()
+                    .in(UserWx::getUid, runnerIds));
+            runnerNames = wxUsers.stream().collect(Collectors.toMap(
+                    UserWx::getUid,
+                    (u) -> u.getNickname() == null ? ("跑腿员" + u.getUid()) : u.getNickname(),
+                    (a, b) -> a));
         }
-        result.put("topGoods", topList);
+        List<Map<String, Object>> topRunners = new ArrayList<>();
+        for (Map<String, Object> row : rows) {
+            Long runnerId = toLong(row.get("runner_id"));
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("uid", runnerId);
+            item.put("name", runnerNames.getOrDefault(runnerId, "跑腿员" + runnerId));
+            item.put("value", toLong(row.get("task_count")));
+            topRunners.add(item);
+        }
+        result.put("topRunners", topRunners);
         return R.ok(result);
     }
 
     /**
-     * 生成/补算统计数据（最近 days 天，含今天；覆盖已有同日数据）
+     * 生成/补算统计数据（最近 days 天，含今天）
      */
     @PostMapping("/generate")
-    @SaCheckPermission("mall:stat:list")
+    @SaCheckPermission("order:order:list:hall")
     public R<String> generate(@RequestParam(value = "days", defaultValue = "7") Integer days) {
         int d = Math.max(1, Math.min(days, 31));
         int count = statisticsService.generateRecentDays(d);

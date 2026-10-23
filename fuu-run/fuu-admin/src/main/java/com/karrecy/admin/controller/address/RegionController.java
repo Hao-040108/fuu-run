@@ -43,10 +43,6 @@ public class RegionController extends BaseController {
     @PostMapping("/add")
     @SaCheckPermission("address:region:add")
     public R<Void> add(@Validated @RequestBody SchoolRegion schoolRegion) {
-        if (LoginHelper.isSchoolAdmin()) {
-            School school = getAgentSchool();
-            schoolRegion.setSchoolId(school.getId());
-        }
         schoolRegion.setCreateTime(LocalDateTime.now());
         schoolRegion.setUpdateTime(LocalDateTime.now());
         schoolRegion.setCreateId(getUserId());
@@ -62,12 +58,6 @@ public class RegionController extends BaseController {
     @PutMapping("/edit")
     @SaCheckPermission("address:region:edit")
     public R<Void> edit(@Validated @RequestBody SchoolRegion schoolRegion) {
-        if (LoginHelper.isSchoolAdmin()) {
-            School agentSchool = getAgentSchool();
-            if (!agentSchool.getId().equals(schoolRegion.getSchoolId())) {
-                return R.fail("没有权限");
-            }
-        }
         return toAjax(schoolRegionService.updateById(schoolRegion));
     }
 
@@ -79,10 +69,6 @@ public class RegionController extends BaseController {
     @GetMapping("/list/{schoolId}")
     @SaCheckPermission("address:region:list")
     public R<List<RegionVO>> list(@PathVariable Long schoolId) {
-        if (LoginHelper.isSchoolAdmin()) {
-            School school = getAgentSchool();
-            schoolId = school.getId();
-        }
         return R.ok(schoolRegionService.selectSchoolRegionListAll(schoolId));
     }
 

@@ -235,7 +235,7 @@
 				],
 				currSchool:null, //当前校区
 				submitForm:{
-					serviceType:0 , // 帮取送
+					serviceType:0 , // 代拿
 					schoolId:null, // 学校id
 					weight:'小于2KG',  // 物品重量
 					detail:'',  // 订单详情

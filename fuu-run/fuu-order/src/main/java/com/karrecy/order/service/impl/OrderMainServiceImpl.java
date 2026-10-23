@@ -28,7 +28,6 @@ import com.karrecy.order.domain.dto.OrderCancelDTO;
 import com.karrecy.order.domain.dto.OrderCompleteDTO;
 import com.karrecy.order.domain.dto.OrderQuery;
 import com.karrecy.order.domain.dto.OrderSubmitDTO;
-import com.karrecy.order.domain.dto.MallOrderCreateDTO;
 import com.karrecy.order.domain.po.*;
 import com.karrecy.order.domain.vo.AddressVO;
 import com.karrecy.order.domain.vo.OrderDetailVO;
@@ -214,13 +213,14 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
         }
         // 帮买订单
         else if (ObjectUtil.equals(serviceType, ServiceType.PURCHASE.getCode())) {
-
-            orderMain.setStartAddress(StringUtils.isBlank(startAddress.getLat()) ? null : startAddress);
+            // 代购任务起点可选（可到店购买后直接送达）
+            orderMain.setStartAddress(startAddress == null || StringUtils.isBlank(startAddress.getLat()) ? null : startAddress);
             orderMain.setEstimatedPrice(orderSubmitDTO.getEstimatedPrice()); //预估商品价格
         }
-        // 万能帮订单
-        else if (ObjectUtil.equals(serviceType, ServiceType.PURCHASE.getCode())) {
-
+        // 其他服务订单
+        else if (ObjectUtil.equals(serviceType, ServiceType.GENERAL_HELP.getCode())) {
+            orderMain.setStartAddress(startAddress == null || StringUtils.isBlank(startAddress.getLat()) ? null : startAddress);
+            orderMain.setEstimatedPrice(orderSubmitDTO.getEstimatedPrice());
         }
 
         orderMainMapper.insert(orderMain);
@@ -317,92 +317,6 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Long createMallOrder(MallOrderCreateDTO dto) {
-        // —— 校验学校与用户（与需求大厅下单保持一致的规则）——
-        School schoolDB = schoolMapper.selectById(dto.getSchoolId());
-        if (schoolDB == null) {
-            throw new OrderException("没有找到该学校");
-        }
-        if (ObjectUtil.equals(schoolDB.getStatus(), Status.DISABLE.getCode())) {
-            throw new OrderException("当前学校已关闭，不可下单");
-        }
-        Long uid = LoginHelper.getUserId();
-        UserWx userWx = userWxMapper.selectOne(new LambdaQueryWrapper<UserWx>().eq(UserWx::getUid, uid));
-        if (ObjectUtil.isEmpty(userWx)) {
-            throw new OrderException("该微信用户不存在");
-        }
-        if (ObjectUtil.isNull(userWx.getPhone())) {
-            throw new OrderException("未绑定手机号，不可下单");
-        }
-        if (ObjectUtil.equals(userWx.getCanOrder(), Status.DISABLE.getCode())) {
-            throw new OrderException("账号被拉黑，不可下单");
-        }
-        if (ObjectUtil.isEmpty(dto.getEndAddress())) {
-            throw new OrderException("收货地址不可为空");
-        }
-
-        BigDecimal goodsAmount = ObjectUtil.defaultIfNull(dto.getGoodsAmount(), BigDecimal.ZERO);
-        BigDecimal serviceFee = ObjectUtil.defaultIfNull(dto.getServiceFee(), BigDecimal.ZERO);
-        BigDecimal additionalAmount = ObjectUtil.defaultIfNull(dto.getAdditionalAmount(), BigDecimal.ZERO);
-        BigDecimal totalAmount = BigDecimalUtils.add(
-                BigDecimalUtils.add(schoolDB.getFloorPrice(), goodsAmount),
-                BigDecimalUtils.add(serviceFee, additionalAmount));
-
-        // —— 构建订单主表（来源=代购商城，复用"代买"服务类型）——
-        OrderMain orderMain = new OrderMain();
-        orderMain.setSchoolId(schoolDB.getId());
-        orderMain.setServiceType(ServiceType.PURCHASE.getCode());
-        orderMain.setOrderSource(1);
-        orderMain.setTag(dto.getTag());
-        orderMain.setWeight(null);
-        orderMain.setDetail(dto.getDetail());
-        orderMain.setGender(2);
-        orderMain.setIsTimed(Status.DISABLE.getCode());
-        orderMain.setSpecifiedTime(null);
-        orderMain.setAutoCancelTtl(dto.getAutoCancelTtl());
-        orderMain.setEstimatedPrice(goodsAmount);
-        orderMain.setGoodsAmount(goodsAmount);
-        orderMain.setTotalAmount(totalAmount);
-        orderMain.setStatus(OrderStatus.PENDING_PAYMENT.getCode());
-        orderMain.setCreateTime(LocalDateTime.now());
-        orderMain.setUserId(uid);
-        orderMain.setRunnerId(null);
-        orderMain.setStartAddress(null);
-        orderMain.setEndAddress(dto.getEndAddress());
-        orderMainMapper.insert(orderMain);
-        Long orderId = orderMain.getId();
-
-        // —— 支付表 ——
-        OrderPayment orderPayment = new OrderPayment();
-        orderPayment.setOrderId(orderId);
-        orderPayment.setAdditionalAmount(additionalAmount);
-        orderPayment.setActualPayment(totalAmount);
-        orderPayment.setPaymentStatus(PayStatus.UNPAID.getCode());
-        orderPayment.setRefundPendingTime(null);
-        orderPayment.setRefundTime(null);
-        orderPayment.setIsCouponed(Status.DISABLE.getCode());
-        orderPayment.setCouponId(null);
-        orderPayment.setDiscountAmount(null);
-        orderPaymentMapper.insert(orderPayment);
-
-        // —— 流程表 ——
-        OrderProgress orderProgress = new OrderProgress();
-        orderProgress.setOrderId(orderId);
-        orderProgress.setAcceptedTime(null);
-        orderProgress.setDeliveredTime(null);
-        orderProgress.setCompletedTime(null);
-        orderProgress.setCompletedType(null);
-        orderProgress.setCancelTime(null);
-        orderProgress.setCancelReason(null);
-        orderProgress.setCancelUserType(null);
-        orderProgress.setCancelUserId(null);
-        orderProgressMapper.insert(orderProgress);
-
-        return orderId;
-    }
-
-    @Override
     public PayedVO payForOrder(Long orderId, String desc, BigDecimal totalAmount) {
         OrderMain orderMainDB = orderMainMapper.selectById(orderId);
         if (ObjectUtil.isEmpty(orderMainDB)) {
@@ -426,7 +340,6 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
                         OrderMain::getId,
                         OrderMain::getSchoolId,
                         OrderMain::getServiceType,
-                        OrderMain::getOrderSource,
                         OrderMain::getStatus,
                         OrderMain::getCreateTime,
                         OrderMain::getStartAddress,
@@ -443,15 +356,9 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
                 .eq(ObjectUtil.isNotNull(orderQuery.getOrderUid()), OrderMain::getUserId, orderQuery.getOrderUid())
                 .eq(ObjectUtil.isNotNull(orderQuery.getTakerUid()), OrderMain::getRunnerId, orderQuery.getTakerUid())
                 .eq(ObjectUtil.isNotNull(orderQuery.getServiceType()), OrderMain::getServiceType, orderQuery.getServiceType())
-                .eq(ObjectUtil.isNotNull(orderQuery.getOrderSource()), OrderMain::getOrderSource, orderQuery.getOrderSource())
                 .between(ObjectUtil.isNotNull(orderQuery.getBeginTime()), OrderMain::getCreateTime, orderQuery.getBeginTime(), orderQuery.getEndTime())
                 .eq(ObjectUtil.isNotNull(orderQuery.getStatus()), OrderMain::getStatus, orderQuery.getStatus());
 
-        //如果是校区管理员 只能查看自己校区
-        if (LoginHelper.isSchoolAdmin()) {
-            School school = schoolMapper.selectOne(new LambdaQueryWrapper<School>().eq(School::getBelongUid, LoginHelper.getUserId()));
-            lqm.eq(OrderMain::getSchoolId,school.getId());
-        }
         Page<OrderMain> orderMainPage = orderMainMapper.selectPage(pageQuery.build(), lqm);
         return TableDataInfo.build(orderMainPage);
     }
@@ -464,7 +371,6 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
 //                        OrderMain::getSchoolId,
                         OrderMain::getDetail,
                         OrderMain::getServiceType,
-                        OrderMain::getOrderSource,
                         OrderMain::getStatus,
                         OrderMain::getCreateTime,
                         OrderMain::getStartAddress,
@@ -472,7 +378,6 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
                         OrderMain::getTag,
                         OrderMain::getTotalAmount)
                 .orderByDesc(OrderMain::getCreateTime)
-                .eq(ObjectUtil.isNotNull(orderQuery.getOrderSource()), OrderMain::getOrderSource, orderQuery.getOrderSource())
                 .eq(ObjectUtil.isNotNull(orderQuery.getStatus()), OrderMain::getStatus, orderQuery.getStatus());
 
         if (ObjectUtil.equals(orderQuery.getOrderOrTake(),0)) {
@@ -1005,41 +910,32 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
         //收益分发
         School schoolDB = schoolMapper.selectById(orderMainDB.getSchoolId());
         Integer profitPlat = schoolDB.getProfitPlat(); //平台收益占比
-        Integer profitAgent = schoolDB.getProfitAgent(); //代理收益占比
         Integer profitRunner = schoolDB.getProfitRunner(); //跑腿收益占比
-        Integer totalProfit = profitRunner + profitAgent + profitPlat;
-        //计算收益
+        Integer totalProfit = profitRunner + profitPlat;
+        //计算收益（原校区代理分成并入平台，保持两方结算）
         OrderPayment orderPaymentDB = orderPaymentMapper.selectById(orderId);
         BigDecimal totalAmount = orderMainDB.getTotalAmount();
         BigDecimal profitPlatAmount = BigDecimalUtils.multiply(totalAmount,
                 BigDecimalUtils.divide(new BigDecimal(profitPlat),new BigDecimal(totalProfit)));
-        BigDecimal profitAgentAmount = BigDecimalUtils.multiply(totalAmount,
-                BigDecimalUtils.divide(new BigDecimal(profitAgent),new BigDecimal(totalProfit)));
         BigDecimal profitRunnerAmount = BigDecimalUtils.multiply(totalAmount,
                 BigDecimalUtils.divide(new BigDecimal(profitRunner),new BigDecimal(totalProfit)));
         Long adminId = UserConstants.ADMIN_ID;
         Long runnerId = orderMainDB.getRunnerId();
-        Long agentUid = schoolDB.getBelongUid();
         Wallet walletAdmin = walletMapper.selectById(adminId);
         Wallet walletRunner = walletMapper.selectById(runnerId);
-        Wallet walletAgent = walletMapper.selectById(agentUid);
         walletAdmin.setBalance(BigDecimalUtils.add(walletAdmin.getBalance(),profitPlatAmount));
         walletAdmin.setUpdateTime(LocalDateTime.now());
         walletRunner.setBalance(BigDecimalUtils.add(walletRunner.getBalance(),profitRunnerAmount));
         walletRunner.setUpdateTime(LocalDateTime.now());
-        walletAgent.setBalance(BigDecimalUtils.add(walletAgent.getBalance(),profitAgentAmount));
-        walletAgent.setUpdateTime(LocalDateTime.now());
         walletMapper.updateById(walletAdmin);
         walletMapper.updateById(walletRunner);
-        walletMapper.updateById(walletAgent);
         //插入资金流动表
         CapitalFlow capitalFlow = new CapitalFlow();
         capitalFlow.setOrderId(orderId);
         capitalFlow.setUserId(orderMainDB.getUserId());
-        capitalFlow.setAgentId(agentUid);
         capitalFlow.setRunnerId(runnerId);
         capitalFlow.setProfitPlat(profitPlatAmount);
-        capitalFlow.setProfitAgent(profitAgentAmount);
+        capitalFlow.setProfitAgent(BigDecimal.ZERO);
         capitalFlow.setProfitRunner(profitRunnerAmount);
         capitalFlow.setProfitUser(BigDecimalUtils.multiply(orderPaymentDB.getActualPayment(),new BigDecimal(-1)));
         capitalFlow.setType(CapitalType.ORDER_COMPLETE.getCode());
@@ -1087,41 +983,32 @@ public class OrderMainServiceImpl extends ServiceImpl<OrderMainMapper, OrderMain
         //收益分发
         School schoolDB = schoolMapper.selectById(orderMainDB.getSchoolId());
         Integer profitPlat = schoolDB.getProfitPlat(); //平台收益占比
-        Integer profitAgent = schoolDB.getProfitAgent(); //代理收益占比
         Integer profitRunner = schoolDB.getProfitRunner(); //跑腿收益占比
-        Integer totalProfit = profitRunner + profitAgent + profitPlat;
-        //计算收益
+        Integer totalProfit = profitRunner + profitPlat;
+        //计算收益（原校区代理分成并入平台，保持两方结算）
         OrderPayment orderPaymentDB = orderPaymentMapper.selectById(orderId);
         BigDecimal totalAmount = orderMainDB.getTotalAmount();
         BigDecimal profitPlatAmount = BigDecimalUtils.multiply(totalAmount,
                 BigDecimalUtils.divide(new BigDecimal(profitPlat),new BigDecimal(totalProfit)));
-        BigDecimal profitAgentAmount = BigDecimalUtils.multiply(totalAmount,
-                BigDecimalUtils.divide(new BigDecimal(profitAgent),new BigDecimal(totalProfit)));
         BigDecimal profitRunnerAmount = BigDecimalUtils.multiply(totalAmount,
                 BigDecimalUtils.divide(new BigDecimal(profitRunner),new BigDecimal(totalProfit)));
         Long adminId = UserConstants.ADMIN_ID;
         Long runnerId = orderMainDB.getRunnerId();
-        Long agentUid = schoolDB.getBelongUid();
         Wallet walletAdmin = walletMapper.selectById(adminId);
         Wallet walletRunner = walletMapper.selectById(runnerId);
-        Wallet walletAgent = walletMapper.selectById(agentUid);
         walletAdmin.setBalance(BigDecimalUtils.add(walletAdmin.getBalance(),profitPlatAmount));
         walletAdmin.setUpdateTime(LocalDateTime.now());
         walletRunner.setBalance(BigDecimalUtils.add(walletRunner.getBalance(),profitRunnerAmount));
         walletRunner.setUpdateTime(LocalDateTime.now());
-        walletAgent.setBalance(BigDecimalUtils.add(walletAgent.getBalance(),profitAgentAmount));
-        walletAgent.setUpdateTime(LocalDateTime.now());
         walletMapper.updateById(walletAdmin);
         walletMapper.updateById(walletRunner);
-        walletMapper.updateById(walletAgent);
         //插入资金流动表
         CapitalFlow capitalFlow = new CapitalFlow();
         capitalFlow.setOrderId(orderId);
         capitalFlow.setUserId(orderMainDB.getUserId());
-        capitalFlow.setAgentId(agentUid);
         capitalFlow.setRunnerId(runnerId);
         capitalFlow.setProfitPlat(profitPlatAmount);
-        capitalFlow.setProfitAgent(profitAgentAmount);
+        capitalFlow.setProfitAgent(BigDecimal.ZERO);
         capitalFlow.setProfitRunner(profitRunnerAmount);
         capitalFlow.setProfitUser(BigDecimalUtils.multiply(orderPaymentDB.getActualPayment(),new BigDecimal(-1)));
         capitalFlow.setType(CapitalType.ORDER_COMPLETE.getCode());

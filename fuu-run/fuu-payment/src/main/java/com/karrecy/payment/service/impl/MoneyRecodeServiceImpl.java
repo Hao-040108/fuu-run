@@ -96,12 +96,6 @@ public class MoneyRecodeServiceImpl extends ServiceImpl<MoneyRecodeMapper, Money
                 capitalFlow.setRunnerId(moneyRecodeDB.getUid());
                 capitalFlow.setProfitRunner(moneyRecodeDB.getCash());
             }
-            //代理提现
-            if (user.getUserType().equals(UserType.SCHOOL_AGENT.getCode())) {
-                capitalFlow.setType(CapitalType.RECODE_AGENT.getCode());
-                capitalFlow.setAgentId(moneyRecodeDB.getUid());
-                capitalFlow.setProfitAgent(moneyRecodeDB.getCash());
-            }
             capitalFlowMapper.insert(capitalFlow);
             //更新钱包
             Wallet walletDB = walletMapper.selectById(moneyRecodeDB.getUid());

@@ -69,7 +69,7 @@
 		</div>
 		<div class="box">
 		
-			<nut-cell @click="showMoneyPopup = true" is-link title="追加金额" :desc="submitForm.additionalAmount">
+			<nut-cell @click="showMoneyPopup = true" is-link title="代购预算（含商品费用）" :desc="submitForm.additionalAmount">
 				<template #icon>
 					<image class="nut-icon" src="/static/icons/钱币.png"></image>
 				</template>
@@ -276,7 +276,7 @@
 				],
 				currSchool:null, //当前校区
 				submitForm:{
-					serviceType:1 , // 帮买
+					serviceType:1 , // 代购
 					schoolId:null, // 学校id
 					weight:'小于2KG',  // 物品重量
 					detail:'',  // 订单详情

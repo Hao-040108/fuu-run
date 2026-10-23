@@ -71,11 +71,6 @@ public class RunnerApplyServiceImpl extends ServiceImpl<RunnerApplyMapper, Runne
             lqw.between(RunnerApply::getUpdateTime, params.get("updateTimeBegin"), params.get("updateTimeEnd"));
         }
 
-        if (LoginHelper.isSchoolAdmin()) {
-            School one = schoolMapper.selectOne(new LambdaQueryWrapper<School>().eq(School::getBelongUid, LoginHelper.getUserId()));
-            if (ObjectUtil.isNull(one)) throw new OrderException("当前无代理校区，没有权限");
-            lqw.eq(RunnerApply::getSchoolId, one.getId());
-        }
         Page<RunnerApply> schoolPage = runnerApplyMapper.selectPage(pageQuery.build(), lqw);
         return TableDataInfo.build(schoolPage);
     }
@@ -116,17 +111,6 @@ public class RunnerApplyServiceImpl extends ServiceImpl<RunnerApplyMapper, Runne
         runnerApply.setStatus(Status.PENDING.getCode());
         runnerApplyMapper.insert(runnerApply);
 
-        //通知校区代理
-        Long belongUid = schoolDB.getBelongUid();
-        UserPc agent = userPcMapper.selectOne(new LambdaQueryWrapper<UserPc>().eq(UserPc::getUid, belongUid));
-        if (agent.getEmailEnable().equals(Status.OK.getCode())) {
-            //发送邮件
-            emailService.sendHtml(
-                    agent.getEmail(),
-                    "跑腿申请通知",
-                    "您所管理校区有新的跑腿申请，请前往查看"
-            );
-        }
     }
 
     /**

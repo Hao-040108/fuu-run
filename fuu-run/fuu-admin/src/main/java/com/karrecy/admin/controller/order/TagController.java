@@ -48,10 +48,6 @@ public class TagController extends BaseController {
         tags.setCreateTime(LocalDateTime.now());
         tags.setUpdateId(uid);
         tags.setUpdateTime(LocalDateTime.now());
-        if (LoginHelper.isSchoolAdmin()) {
-            School school = getAgentSchool();
-            tags.setSchoolId(school.getId());
-        }
         return toAjax(tagsService.save(tags));
     }
 
@@ -66,12 +62,6 @@ public class TagController extends BaseController {
         Long uid = getUserId();
         tags.setUpdateId(uid);
         tags.setUpdateTime(LocalDateTime.now());
-        if (LoginHelper.isSchoolAdmin()) {
-            School school = getAgentSchool();
-            if (!school.getId().equals(tags.getSchoolId())) {
-                return R.fail("无权限修改该校区的标签");
-            }
-        }
         return toAjax(tagsService.updateById(tags));
     }
 
@@ -86,11 +76,6 @@ public class TagController extends BaseController {
                 .eq(ObjectUtil.isNotNull(tags.getServiceType()), Tags::getServiceType, tags.getServiceType())
                 .eq(ObjectUtil.isNotNull(tags.getId()), Tags::getId, tags.getId())
                 .eq(ObjectUtil.isNotNull(tags.getSchoolId()), Tags::getSchoolId, tags.getSchoolId());
-        //如果是校区管理员就只能看到自己校区的
-        if (LoginHelper.isSchoolAdmin()) {
-            School school = getAgentSchool();
-            eq.eq(Tags::getSchoolId,school.getId());
-        }
         Map<String, Object> params = tags.getParams();
         if (params.get("createTimeBegin") != null) {
             eq.between(Tags::getCreateTime, params.get("createTimeBegin"), params.get("createTimeEnd"));

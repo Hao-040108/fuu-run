@@ -16,6 +16,11 @@ pnpm-debug.log*
 pnpm-lock.yaml
 package-lock.json
 
+# uni-app / 微信开发者工具本地配置
+fuu-run-uni/project.config.json
+fuu-run-uni/project.private.config.json
+fuu-run-uni/unpackage/
+
 # Vue / React / 前端打包文件
 *.log
 *.tsbuildinfo

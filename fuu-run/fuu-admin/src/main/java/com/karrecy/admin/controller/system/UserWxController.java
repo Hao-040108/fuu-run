@@ -55,15 +55,6 @@ public class UserWxController extends BaseController {
             return R.fail("用户不存在");
         }
         UserWx userWxDB = user.getUserWx();
-        //校区管理员只能修改资金跑腿员
-        LoginUser loginUser = LoginHelper.getLoginUser();
-        if (LoginHelper.isSchoolAdmin()) {
-            Long schoolId = userWxDB.getSchoolId();
-            School schoolDB = schoolService.getById(schoolId);
-            if (ObjectUtil.isNull(schoolDB) || !schoolDB.getBelongUid().equals(loginUser.getUid())) {
-                return R.fail("无权限修改");
-            }
-        }
         userWxDB.setCanOrder(userWx.getCanOrder());
         userWxDB.setCanTake(userWx.getCanTake());
         return toAjax(userPcService.updateWxUser(userWxDB));

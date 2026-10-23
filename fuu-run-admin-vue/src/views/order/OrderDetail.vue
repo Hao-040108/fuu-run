@@ -13,12 +13,7 @@
         <el-descriptions-item label="订单状态">
           <el-tag :type="statusType(detail.orderMain.status)">{{ STATUS_MAP[detail.orderMain.status] }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="订单来源">
-          <el-tag :type="detail.orderMain.orderSource === 1 ? 'warning' : 'info'">
-            {{ detail.orderMain.orderSource === 1 ? '商城代购' : '需求大厅' }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="服务类型">{{ SERVICE_MAP[detail.orderMain.serviceType] }}</el-descriptions-item>
+        <el-descriptions-item label="任务类型">{{ SERVICE_MAP[detail.orderMain.serviceType] }}</el-descriptions-item>
         <el-descriptions-item label="标签">{{ detail.orderMain.tag }}</el-descriptions-item>
         <el-descriptions-item label="订单金额">￥{{ detail.orderMain.totalAmount }}</el-descriptions-item>
         <el-descriptions-item label="下单用户">
@@ -93,16 +88,16 @@ import { orderDetail, getAppeal } from '../../api/order'
 const STATUS_MAP = {
   0: '待支付',
   1: '待接单',
-  2: '待配送',
-  3: '配送中',
-  4: '已送达',
+  2: '待执行',
+  3: '执行中',
+  4: '已交付',
   5: '已取消',
   10: '已完成',
-  11: '已申诉'
+  11: '申诉中'
 }
-const SERVICE_MAP = { 0: '帮取送', 1: '帮买/代购', 2: '万能帮' }
+const SERVICE_MAP = { 0: '代拿', 1: '代购', 2: '其他服务' }
 const PAY_MAP = { 0: '未支付', 1: '已支付', 2: '退款中', 3: '已退款' }
-const APPEAL_MAP = { 0: '已驳回', 1: '已通过', 2: '处理中' }
+const APPEAL_MAP = { 0: '已驳回', 1: '已通过', 2: '调解中' }
 
 const route = useRoute()
 const orderId = route.params.id

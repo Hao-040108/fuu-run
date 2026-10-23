@@ -9,7 +9,7 @@
       <el-form-item label="服务类型">
         <el-select v-model="query.serviceType" placeholder="全部" clearable style="width: 130px">
           <el-option label="帮取送" :value="0" />
-          <el-option label="帮买/代购" :value="1" />
+          <el-option label="代购" :value="1" />
           <el-option label="万能帮" :value="2" />
         </el-select>
       </el-form-item>
@@ -53,7 +53,7 @@
         <el-form-item label="服务类型" prop="serviceType">
           <el-radio-group v-model="form.serviceType">
             <el-radio :value="0">帮取送</el-radio>
-            <el-radio :value="1">帮买/代购</el-radio>
+            <el-radio :value="1">代购</el-radio>
             <el-radio :value="2">万能帮</el-radio>
           </el-radio-group>
         </el-form-item>
@@ -75,7 +75,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { addTag, editTag, listTags, removeTags } from '../../api/order'
 import { listSchools } from '../../api/school'
 
-const SERVICE_MAP = { 0: '帮取送', 1: '帮买/代购', 2: '万能帮' }
+const SERVICE_MAP = { 0: '代拿', 1: '代购', 2: '其他服务' }
 
 const loading = ref(false)
 const saving = ref(false)

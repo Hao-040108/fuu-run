@@ -18,11 +18,6 @@ public enum UserType {
     SUPER_ADMIN(0,"super_admin"),
 
     /**
-     * 校区代理
-     */
-    SCHOOL_AGENT(1,"school_agent"),
-
-    /**
      * 普通管理员
      */
     COMMON_ADMIN(2,"common_admin"),
@@ -40,7 +35,12 @@ public enum UserType {
     /**
      * 系统
      */
-    SYSTEM(5,"system");
+    SYSTEM(5,"system"),
+
+    /**
+     * 纠纷调解员
+     */
+    MEDIATOR(6,"mediator");
 
     private final Integer code;
 

@@ -138,14 +138,7 @@ public class LoginController extends BaseController {
     public R<Map<String, Object>> getInfo() {
         LoginUser loginUser = LoginHelper.getLoginUser();
         User user = userService.selectUserByUid(loginUser.getUid());
-        if (user.getDeviceType().equals(DeviceType.PC.getCode())) {
-            if (user.getUserType().equals(UserType.SCHOOL_AGENT.getCode())) {
-                School one = schoolService.getOne(new LambdaQueryWrapper<School>().eq(School::getBelongUid, user.getUid()));
-                user.getUserPc().setAgentSchool(ObjectUtil.isNotNull(one) ? one.getName() : "暂无代理校区");
-                user.getUserPc().setAgentSchoolId(ObjectUtil.isNotNull(one) ? one.getId() : null);
-            }
-
-        } else if (user.getDeviceType().equals(DeviceType.WX.getCode())) {
+        if (user.getDeviceType().equals(DeviceType.WX.getCode())) {
             if (ObjectUtil.equals(user.getUserWx().getIsRunner(), Status.OK.getCode())) {
                 //如果是跑腿员就查找学校名称
                 School schoolDB = schoolService.getById(user.getUserWx().getSchoolId());

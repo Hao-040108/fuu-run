@@ -39,16 +39,10 @@ public class OrderMain implements Serializable {
     private Long schoolId;
 
     /**
-     * 服务类型 0 帮取送 1 代买 2 万能服务
+     * 任务类型 0 代拿 1 代购 2 其他服务
      */
     @TableField("service_type")
     private Integer serviceType;
-
-    /**
-     * 订单来源 0 需求大厅 1 代购商城
-     */
-    @TableField("order_source")
-    private Integer orderSource;
 
     /**
      * 标签
@@ -111,7 +105,7 @@ public class OrderMain implements Serializable {
     private BigDecimal estimatedPrice;
 
     /**
-     * 商品金额（代购商城订单）
+     * 代购任务的商品预算金额
      */
     @TableField("goods_amount")
     private BigDecimal goodsAmount;

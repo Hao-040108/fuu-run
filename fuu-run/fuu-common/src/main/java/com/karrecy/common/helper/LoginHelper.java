@@ -139,7 +139,4 @@ public class LoginHelper {
         return isAdmin(getUserId());
     }
 
-    public static boolean isSchoolAdmin() {
-        return getUserType().equals(UserType.SCHOOL_AGENT);
-    }
 }

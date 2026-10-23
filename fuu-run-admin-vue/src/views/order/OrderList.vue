@@ -9,17 +9,11 @@
           <el-option v-for="s in schools" :key="s.id" :label="s.name" :value="s.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="服务类型">
+      <el-form-item label="任务类型">
         <el-select v-model="query.serviceType" placeholder="全部" clearable style="width: 130px">
-          <el-option label="帮取送" :value="0" />
-          <el-option label="帮买/代购" :value="1" />
-          <el-option label="万能帮" :value="2" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="来源">
-        <el-select v-model="query.orderSource" placeholder="全部" clearable style="width: 130px">
-          <el-option label="需求大厅" :value="0" />
-          <el-option label="代购商城" :value="1" />
+          <el-option label="代拿" :value="0" />
+          <el-option label="代购" :value="1" />
+          <el-option label="其他服务" :value="2" />
         </el-select>
       </el-form-item>
       <el-form-item label="状态">
@@ -37,14 +31,7 @@
       <el-table-column label="订单号" width="200">
         <template #default="{ row }">{{ row.id }}</template>
       </el-table-column>
-      <el-table-column label="来源" width="100">
-        <template #default="{ row }">
-          <el-tag :type="row.orderSource === 1 ? 'warning' : 'info'">
-            {{ row.orderSource === 1 ? '商城代购' : '需求大厅' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="服务类型" width="100">
+      <el-table-column label="任务类型" width="100">
         <template #default="{ row }">
           {{ SERVICE_MAP[row.serviceType] || row.serviceType }}
         </template>
@@ -102,7 +89,7 @@ const STATUS_MAP = {
   10: '已完成',
   11: '已申诉'
 }
-const SERVICE_MAP = { 0: '帮取送', 1: '帮买/代购', 2: '万能帮' }
+const SERVICE_MAP = { 0: '代拿', 1: '代购', 2: '其他服务' }
 
 const statusType = (s) => {
   if (s === 0) return 'warning'
@@ -123,7 +110,6 @@ const query = reactive({
   id: '',
   schoolId: null,
   serviceType: null,
-  orderSource: null,
   status: null
 })
 
@@ -136,7 +122,6 @@ const load = async () => {
       id: query.id || undefined,
       schoolId: query.schoolId || undefined,
       serviceType: query.serviceType === null ? undefined : query.serviceType,
-      orderSource: query.orderSource === null ? undefined : query.orderSource,
       status: query.status === null ? undefined : query.status
     })
     rows.value = res.rows || []
@@ -155,7 +140,6 @@ const reset = () => {
   query.id = ''
   query.schoolId = null
   query.serviceType = null
-  query.orderSource = null
   query.status = null
   search()
 }

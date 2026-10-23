@@ -1,7 +1,5 @@
-package com.karrecy.admin.controller.mall;
+package com.karrecy.admin.controller.order;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaMode;
 import com.karrecy.common.config.FuuConfig;
 import com.karrecy.common.core.controller.BaseController;
 import com.karrecy.common.core.domain.R;
@@ -25,29 +23,20 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 本地文件上传（开发演示用）
- * <p>不依赖第三方云存储：图片落盘到 fuu.local-upload-dir，通过 /uploads/** 静态访问。
- * 生产环境可替换为 OSS（七牛云/阿里云/MinIO）实现，前端接口保持不变。</p>
+ * 任务附件图片上传（本地存储，便于离线演示）
  */
 @RestController
-@RequestMapping("/mall/admin")
+@RequestMapping("/order")
 @RequiredArgsConstructor
 @Slf4j
-public class LocalUploadController extends BaseController {
+public class TaskUploadController extends BaseController {
 
-    /** 允许的图片后缀 */
     private static final List<String> ALLOWED_EXT = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "webp");
-
-    /** 单文件大小上限 5MB */
     private static final long MAX_SIZE = 5 * 1024 * 1024L;
 
     private final FuuConfig fuuConfig;
 
-    /**
-     * 商品图片上传（返回可直接访问的 URL）
-     */
     @PostMapping("/upload/image")
-    @SaCheckPermission(value = {"mall:goods:add", "mall:goods:edit"}, mode = SaMode.OR)
     public R<String> uploadImage(@RequestParam("file") MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new ServiceException("上传文件不能为空");
@@ -81,8 +70,7 @@ public class LocalUploadController extends BaseController {
         }
         String baseUrl = fuuConfig.getLocalUploadBaseUrl() == null ? "" : fuuConfig.getLocalUploadBaseUrl();
         String url = baseUrl.replaceAll("/+$", "") + "/uploads/" + relative;
-        log.info("本地文件上传成功：{} -> {}", original, url);
-        // 注意：单参数 R.ok(String) 会命中 msg 重载，这里用 (msg, data) 形式保证 URL 放在 data 里
+        log.info("任务附件上传成功：{} -> {}", original, url);
         return R.ok("上传成功", url);
     }
 }

@@ -86,7 +86,6 @@ public class ChatListener implements ApplicationListener<ApplicationReadyEvent> 
                 else if (sender.getUid().equals(orderMainDB.getUserId())) senderName = "用户-"+sender.getUserWx().getNickname();
             }
             else {
-                if (ObjectUtil.equals(sender.getUserType(), UserType.SCHOOL_AGENT.getCode())) senderName = "校区代理-"+sender.getUserPc().getName();
                 if (ObjectUtil.equals(sender.getUserType(), UserType.SUPER_ADMIN.getCode())) senderName = "超级管理员";
                 if (ObjectUtil.equals(sender.getUserType(), UserType.SYSTEM.getCode())) senderName = "系统";
 

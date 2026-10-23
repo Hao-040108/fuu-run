@@ -815,16 +815,16 @@
 					let status = data.orderMain.status
 					if(status == 0) data.orderMain.statusText = '待支付';
 					if(status == 1) data.orderMain.statusText = '待接单';
-					if(status == 2) data.orderMain.statusText = '待配送';
-					if(status == 3) data.orderMain.statusText = '配送中';
-					if(status == 4) data.orderMain.statusText = '已送达';
+					if(status == 2) data.orderMain.statusText = '待执行';
+					if(status == 3) data.orderMain.statusText = '执行中';
+					if(status == 4) data.orderMain.statusText = '已交付';
 					if(status == 5) data.orderMain.statusText = '已取消';
 					if(status == 10) data.orderMain.statusText = '已完成';
-					if(status == 11) data.orderMain.statusText = '已关闭';
+					if(status == 11) data.orderMain.statusText = '申诉中';
 					let serviceType = data.orderMain.serviceType
-					if(serviceType == 0) data.orderMain.serviceTypeText = '帮取送'
-					if(serviceType == 1) data.orderMain.serviceTypeText = '帮买'
-					if(serviceType == 2) data.orderMain.serviceTypeText  = '万能帮'
+					if(serviceType == 0) data.orderMain.serviceTypeText = '代拿'
+					if(serviceType == 1) data.orderMain.serviceTypeText = '代购'
+					if(serviceType == 2) data.orderMain.serviceTypeText  = '其他服务'
 					data.orderMain.typeText = data.orderMain.serviceTypeText + '-' + data.orderMain.tag
 					
 					let attachFiles = data.attachFiles

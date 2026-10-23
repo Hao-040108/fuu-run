@@ -29,11 +29,10 @@
 		    ></nut-noticebar> -->
 	
 	<nut-grid :gutter="10" :column-num="2" direction="horizontal">
-	    <nut-grid-item @click="toOrderQusong" text="帮取"><nut-icon font-class-name="gridIcon" name="/static/index/qu.jpg" /></nut-grid-item>
-	    <nut-grid-item @click="toOrderQusong"  text="帮送"><nut-icon font-class-name="gridIcon" name="/static/index/song.jpg" /></nut-grid-item>
-	    <nut-grid-item @click="toOrderBangmai" text="帮买"><nut-icon font-class-name="gridIcon" name="/static/index/mai.jpg" /></nut-grid-item>
-	    <nut-grid-item @click="toOrderWanneg" text="万能"><nut-icon font-class-name="gridIcon" name="/static/index/wan.jpg" /></nut-grid-item>
-	    <nut-grid-item @click="toMall" text="代购商城"><nut-icon font-class-name="gridIcon" name="/static/index/mai.jpg" /></nut-grid-item>
+	    <nut-grid-item @click="toOrderQusong" text="代拿"><nut-icon font-class-name="gridIcon" name="/static/index/qu.jpg" /></nut-grid-item>
+	    <nut-grid-item @click="toOrderBangmai" text="代购"><nut-icon font-class-name="gridIcon" name="/static/index/mai.jpg" /></nut-grid-item>
+	    <nut-grid-item @click="toOrderWanneg" text="其他服务"><nut-icon font-class-name="gridIcon" name="/static/index/wan.jpg" /></nut-grid-item>
+	    <nut-grid-item @click="toMyTasks" text="我的任务"><nut-icon font-class-name="gridIcon" name="/static/icons/order.png" /></nut-grid-item>
 	  </nut-grid>
 	  
 	  <!-- <span @click="toLogin">test</span> -->
@@ -97,9 +96,9 @@
 			
 		},
 		methods: {
-			toMall() {
+			toMyTasks() {
 				uni.navigateTo({
-					url: '/pages/API/mall/index'
+					url: '/pages/API/order/list/list'
 				})
 			},
 			toLogin() {
